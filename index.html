@@ -6,7 +6,6 @@
 <title>UNI-QUEST: The Ultimate English Game</title>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* CSS ตัวเดิม (ปรับแก้ส่วน Timer นิดหน่อย) */
 :root {
   --bg: #0b0f19; --card: #151a2e; --primary: #8b5cf6; --primary-glow: rgba(139, 92, 246, 0.4);
   --secondary: #3b82f6; --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
@@ -21,6 +20,10 @@ body {
   overflow-x: hidden; padding-bottom: 80px;
 }
 main { width: 100%; max-width: 480px; padding: 20px; position: relative; }
+
+/* API Status Badge */
+.api-status { position: absolute; top: 15px; right: 20px; font-size: 0.7rem; background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 12px; display: flex; align-items: center; gap: 8px; z-index: 50; border: 1px solid var(--border); backdrop-filter: blur(5px); }
+.api-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warning); box-shadow: 0 0 8px var(--warning); }
 
 .panel { background: var(--card); border-radius: 28px; padding: 24px; border: 1.5px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.55); margin-bottom: 20px; }
 .title-grad { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, #a78bfa, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
@@ -57,7 +60,6 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 .opt-btn.correct { background: rgba(16,185,129,0.2) !important; border-color: var(--success) !important; color: var(--success); }
 .opt-btn.wrong { background: rgba(239,68,68,0.2) !important; border-color: var(--danger) !important; color: var(--danger); }
 
-/* Animation เขย่าจอเวลาตอบผิด */
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 .shake-screen { animation: shake 0.4s; }
 
@@ -71,9 +73,15 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 </head>
 <body>
 <main id="app">
+  
+  <!-- API Status Indicator -->
+  <div class="api-status" id="api-status">
+    <div class="api-dot" id="api-dot"></div>
+    <span id="api-text">กำลังตรวจสอบ API...</span>
+  </div>
 
   <!-- ================= LOBBY / LOGIN ================= -->
-  <div id="screen-login" class="panel">
+  <div id="screen-login" class="panel" style="margin-top: 40px;">
     <div style="text-align: center; font-size: 5rem; margin-bottom: 10px; filter: drop-shadow(0 0 15px var(--primary-glow));">🪐</div>
     <h1 class="title-grad">UNI-QUEST 2</h1>
     <p class="subtitle">วิชาภาษาอังกฤษเพื่อการศึกษาต่อ 2 (อ30212)</p>
@@ -89,12 +97,12 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
   </div>
 
   <!-- ================= DASHBOARD ================= -->
-  <div id="screen-dashboard" class="hidden">
+  <div id="screen-dashboard" class="hidden" style="margin-top: 40px;">
     <div class="panel" style="display:flex; gap:16px; align-items:center;">
       <div class="avatar-frame" id="main-avatar">🧙‍♂️<div class="avatar-lvl">5</div></div>
       <div style="flex:1;">
         <h3 id="player-name-txt" style="margin:0; font-size:1.25rem; color:#fff;">ชื่อนักเรียน</h3>
-        <p style="margin:4px 0; font-size:0.85rem; color:var(--text-muted);">ระดับผู้กล้า: <b style="color:var(--warning)">Scholarship Hunter 🎖️</b></p>
+        <p style="margin:4px 0; font-size:0.85rem; color:var(--text-muted);">ระดับผู้กล้า: <b style="color:var(--warning)" id="player-title">Scholarship Hunter 🎖️</b></p>
         <div class="exp-bar-bg"><div class="exp-bar-fill"></div></div>
       </div>
     </div>
@@ -109,7 +117,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
   </div>
 
   <!-- ================= QUEST BOARD ================= -->
-  <div id="screen-quests" class="hidden">
+  <div id="screen-quests" class="hidden" style="margin-top: 40px;">
     <div class="tab-container">
       <button class="tab-btn active" onclick="playSound('click'); switchQuestTab('main')">MAIN (หลัก)</button>
       <button class="tab-btn" onclick="playSound('click'); switchQuestTab('side')">SIDE (เสริม)</button>
@@ -133,7 +141,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
   </div>
 
   <!-- ================= INVENTORY ================= -->
-  <div id="screen-inventory" class="hidden">
+  <div id="screen-inventory" class="hidden" style="margin-top: 40px;">
     <div class="tab-container">
       <button class="tab-btn active" onclick="playSound('click'); switchInvTab('rewards')">🎁 คลังรางวัล</button>
       <button class="tab-btn" onclick="playSound('click'); switchInvTab('mats')">📚 ทรัพยากร</button>
@@ -166,7 +174,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
   </div>
 
   <!-- ================= BATTLE SCREEN (ข้อสอบ) ================= -->
-  <div id="screen-game" class="hidden">
+  <div id="screen-game" class="hidden" style="margin-top: 40px;">
     <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(30,41,59,0.8); padding: 12px 20px; border-radius: 16px; border: 1.5px solid var(--border); margin-bottom:16px;">
       <div style="display:flex; flex-direction:column; align-items:center;"><span style="font-size:0.7rem; color:var(--text-muted);">HP</span><span style="font-size:1.2rem; color:var(--danger);" id="hud-hp">❤️❤️❤️</span></div>
       <div style="display:flex; flex-direction:column; align-items:center;"><span style="font-size:0.7rem; color:var(--text-muted);">SCORE</span><span style="font-size:1.2rem; font-weight:700;" id="hud-score">0</span></div>
@@ -174,44 +182,37 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
     </div>
     
     <div class="panel" style="border: 2px solid var(--primary); text-align:center; margin-bottom: 10px; padding-top: 15px;">
-      <!-- แถบเวลา -->
       <div style="background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; margin-bottom: 15px; overflow: hidden;">
         <div id="timer-bar" style="background: var(--success); width: 100%; height: 100%;"></div>
       </div>
-
       <div style="background:var(--primary); padding:2px 12px; border-radius:10px; font-size:0.8rem; display:inline-block; font-weight:bold; margin-bottom:12px;" id="q-counter">Q 1/15</div>
       <div class="q-text" id="q-text" style="font-size:1.15rem; font-weight:600; line-height:1.5;">Question?</div>
     </div>
 
-    <!-- ปุ่มใช้ไอเทม -->
     <div style="text-align: right; margin-bottom: 15px;">
       <button id="btn-use-glasses" style="background: rgba(139, 92, 246, 0.2); border: 1px solid var(--primary); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer;" onclick="playSound('click'); useGlasses()">
         👓 ใช้แว่นตาตัดชอยส์ผิด (1 ครั้ง)
       </button>
     </div>
-    
     <div class="opt-grid" id="opt-container"></div>
   </div>
 
   <!-- ================= END SCREEN ================= -->
-  <div id="screen-end" class="panel hidden">
+  <div id="screen-end" class="panel hidden" style="margin-top: 40px;">
     <h2 style="margin-bottom: 20px; color: var(--text-muted); text-align:center;">MISSION COMPLETE!</h2>
     <div style="width: 120px; height: 120px; margin: 0 auto 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: bold; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; box-shadow: 0 0 30px rgba(245,158,11,0.5);" id="end-rank">S</div>
-    
     <div style="text-align: center; margin-bottom: 20px;" id="end-pass-status"></div>
-
     <div style="text-align: center; margin-bottom: 30px;">
       <h1 style="font-size: 3rem; margin: 0;" id="end-score">0</h1>
       <p style="font-size: 1.15rem;">ตอบถูก <b id="end-correct" style="color:var(--success)">0</b> จาก <span id="end-total">15</span> ข้อ</p>
     </div>
-
     <button class="btn-quest" id="btn-submit" onclick="playSound('click'); submitScore()">📤 ส่งผลคะแนนเข้า Google Sheet</button>
     <button class="btn-quest" style="background: linear-gradient(180deg, #64748b, #475569); box-shadow: 0 6px 0 #334155; margin-top:12px;" onclick="playSound('click'); location.reload()">🏠 กลับหน้าหลัก</button>
     <div id="submit-msg" style="text-align:center; padding:10px; border-radius:10px; margin-top:15px; font-size:0.9rem;" class="hidden"></div>
   </div>
 
   <!-- ================= RANKING ================= -->
-  <div id="screen-ranking" class="hidden panel">
+  <div id="screen-ranking" class="hidden panel" style="margin-top: 40px;">
     <h2 style="color:var(--warning); text-align:center;">🏆 จัดอันดับ Top 5</h2>
     <div id="rank-list" style="display:flex; flex-direction:column; gap:8px; margin-top:20px;"></div>
   </div>
@@ -236,54 +237,49 @@ const $ = id => document.getElementById(id);
 const show = id => $(id).classList.remove('hidden');
 const hide = id => $(id).classList.add('hidden');
 
-/* ================== ระบบเสียง (Web Audio API) ================== */
-// สร้างเสียงในตัว ไม่ต้องง้อไฟล์ .mp3!
+/* ================== ระบบเช็กสถานะ API ================== */
+window.onload = () => {
+  const dot = $("api-dot");
+  const txt = $("api-text");
+  if (!SHEET_URL || SHEET_URL.trim() === "") {
+    dot.style.background = "var(--warning)";
+    dot.style.boxShadow = "0 0 8px var(--warning)";
+    txt.innerText = "โหมดจำลอง (ยังไม่เชื่อม API)";
+  } else {
+    dot.style.background = "var(--success)";
+    dot.style.boxShadow = "0 0 8px var(--success)";
+    txt.innerText = "เชื่อมต่อระบบฐานข้อมูลสำเร็จ";
+  }
+};
+
+/* ================== ระบบเสียง ================== */
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
-
 function playSound(type) {
   if (!audioCtx) audioCtx = new AudioContext();
   if (audioCtx.state === 'suspended') audioCtx.resume();
-  
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  
+  osc.connect(gain); gain.connect(audioCtx.destination);
   const now = audioCtx.currentTime;
-  
   if (type === 'click') {
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(600, now);
-    osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
-    gain.gain.setValueAtTime(0.1, now);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+    osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+    gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
     osc.start(now); osc.stop(now + 0.1);
   } else if (type === 'correct') {
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(600, now);
-    osc.frequency.setValueAtTime(1200, now + 0.1); 
-    gain.gain.setValueAtTime(0.1, now);
-    gain.gain.linearRampToValueAtTime(0, now + 0.3);
+    osc.type = 'triangle'; osc.frequency.setValueAtTime(600, now); osc.frequency.setValueAtTime(1200, now + 0.1); 
+    gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.3);
     osc.start(now); osc.stop(now + 0.3);
   } else if (type === 'wrong') {
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(150, now);
-    osc.frequency.linearRampToValueAtTime(100, now + 0.3);
-    gain.gain.setValueAtTime(0.15, now);
-    gain.gain.linearRampToValueAtTime(0, now + 0.3);
+    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.linearRampToValueAtTime(100, now + 0.3);
+    gain.gain.setValueAtTime(0.15, now); gain.gain.linearRampToValueAtTime(0, now + 0.3);
     osc.start(now); osc.stop(now + 0.3);
   } else if (type === 'victory') {
-    // เล่นคอร์ดสั้นๆ 3 ตัวโน้ต
     [523.25, 659.25, 783.99].forEach((freq, i) => {
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
+      const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
       o.type = 'sine'; o.connect(g); g.connect(audioCtx.destination);
-      o.frequency.value = freq;
-      const t = now + (i * 0.15);
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.1, t + 0.05);
-      g.gain.linearRampToValueAtTime(0, t + 0.5);
+      o.frequency.value = freq; const t = now + (i * 0.15);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.1, t + 0.05); g.gain.linearRampToValueAtTime(0, t + 0.5);
       o.start(t); o.stop(t + 0.5);
     });
   }
@@ -306,7 +302,6 @@ function switchInvTab(type) {
   event.currentTarget.classList.add('active');
   if(type === 'rewards') { show('inv-rewards-view'); hide('inv-mats-view'); } else { hide('inv-rewards-view'); show('inv-mats-view'); }
 }
-
 function equipAvatar(newAvatar) {
   $("main-avatar").innerHTML = `${newAvatar}<div class="avatar-lvl">5</div>`;
   alert(`✨ สวมใส่ตัวละคร ${newAvatar} เรียบร้อยแล้ว!`);
@@ -318,25 +313,46 @@ async function handleLogin() {
   const stdName = $("student-name").value.trim();
   if(!stdId || !stdName) return alert("กรุณากรอกข้อมูลให้ครบถ้วน!");
   
-  // จำลองข้อมูลเข้าสู่ระบบ พร้อมระบบ Anti-cheat เช็กว่าเคยผ่านหรือยัง
-  currentStudent = { 
-      id: stdId, 
-      name: stdName, 
-      cls: "6/1", 
-      module1Passed: false // ถ้าสมมติว่าสอบผ่านแล้วให้แก้เป็น true ปุ่มจะล็อกทันที
-  };
+  const btn = $("btn-login");
+  btn.disabled = true;
+  btn.innerText = "กำลังซิงค์ข้อมูลกับฐานข้อมูล...";
 
-  $("player-name-txt").innerText = `${stdName} (ม.6/1)`;
-  
-  // เช็กหน้าเควสต์
-  if (currentStudent.module1Passed) {
+  try {
+    if (SHEET_URL && SHEET_URL.trim() !== "") {
+      const response = await fetch(`${SHEET_URL}?action=getStudent&id=${stdId}&name=${encodeURIComponent(stdName)}`);
+      currentStudent = await response.json();
+    } else {
+      await new Promise(r => setTimeout(r, 1000));
+      currentStudent = { id: stdId, name: stdName, cls: "6/1", score: 0, title: "Novice Scholar 👶", module1Passed: false };
+    }
+
+    if (currentStudent.error) {
+      alert("❌ ไม่พบข้อมูลนักเรียน โปรดตรวจสอบรหัสและชื่อจริงกับคุณครู");
+      $("api-dot").style.background = "var(--danger)";
+      $("api-dot").style.boxShadow = "0 0 8px var(--danger)";
+      $("api-text").innerText = "การเชื่อมต่อล้มเหลว / ไม่พบชื่อ";
+      btn.disabled = false; btn.innerText = "เริ่มการเดินทาง ⚔️";
+      return;
+    }
+
+    $("player-name-txt").innerText = `${currentStudent.name} (ม.${currentStudent.cls})`;
+    if (currentStudent.title) $("player-title").innerText = currentStudent.title;
+    
+    if (currentStudent.module1Passed) {
       $("status-module1").innerText = "PASSED";
       $("status-module1").className = "quest-status qs-done";
       $("btn-start-m1").innerText = "สอบผ่านแล้ว 🎉";
       $("btn-start-m1").disabled = true;
-  }
+    }
 
-  hide('screen-login'); show('screen-dashboard'); show('bottom-bar');
+    hide('screen-login'); show('screen-dashboard'); show('bottom-bar');
+  } catch (error) {
+    alert("การเชื่อมต่อฐานข้อมูลขัดข้อง: " + error.message);
+    $("api-dot").style.background = "var(--danger)";
+    $("api-dot").style.boxShadow = "0 0 8px var(--danger)";
+    $("api-text").innerText = "ระบบฐานข้อมูลออฟไลน์";
+    btn.disabled = false; btn.innerText = "เริ่มการเดินทาง ⚔️";
+  }
 }
 
 /* ================== ระบบเกม & จับเวลา ================== */
@@ -347,29 +363,25 @@ let timerInterval;
 let timeLeft = 15;
 
 const fallbackQuestions = [
-  { q: "คำว่า <b>dormitory</b> แปลว่าอะไร?", a: "หอพักนักศึกษา", choices: ["หอพักนักศึกษา", "ห้องสมุด", "วิทยาเขต", "คณะ"] },
-  { q: "เติมคำที่คู่กัน: _____ the deadline (ส่งงานทันกำหนด)", a: "meet", choices: ["submit", "meet", "take", "pay"] },
-  { q: "เลือกคำที่สะกด <b>ถูกต้อง</b>", a: "scholarship", choices: ["scholorship", "scholarship", "scholarchip", "scolarship"] }
+  { "q": "คำว่า <b>dormitory</b> แปลว่าอะไร?", "a": "หอพักนักศึกษา", "choices": ["หอพักนักศึกษา", "ห้องสมุด", "วิทยาเขต", "คณะ"] }
 ];
 
 async function startModule1Game() {
   hide('screen-quests'); hide('bottom-bar'); show('screen-game');
-  $("q-text").innerHTML = "กำลังโหลดข้อสอบจากคลังเวทมนตร์...";
-  
+  $("q-text").innerHTML = "กำลังดึงข้อสอบจากคลังเวทมนตร์...";
   hasUsedGlasses = false;
   $("btn-use-glasses").disabled = false;
   $("btn-use-glasses").style.opacity = '1';
 
   try {
     let loadedQuestions = fallbackQuestions;
-    if (JSON_URL) {
+    if (JSON_URL && JSON_URL.trim() !== "") {
       const response = await fetch(JSON_URL);
       loadedQuestions = await response.json();
     }
     
     const shuffledBank = shuffleArray([...loadedQuestions]);
     const selectedQuestions = shuffledBank.slice(0, 15);
-
     const finalQuestions = selectedQuestions.map(q => {
       return { ...q, choices: (q.choices.length === 2) ? q.choices : shuffleArray([...q.choices]) };
     });
@@ -377,7 +389,7 @@ async function startModule1Game() {
     gameState = { questions: finalQuestions, currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
     renderQuestion();
   } catch (error) {
-    alert("โหลดข้อสอบล้มเหลว ใช้ข้อสอบสำรองแทน");
+    alert("โหลดข้อสอบล้มเหลว โปรดตรวจสอบลิงก์ JSON");
     gameState = { questions: fallbackQuestions, currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
     renderQuestion();
   }
@@ -389,19 +401,17 @@ function startTimer() {
   $("timer-bar").style.transition = "none";
   $("timer-bar").style.width = "100%";
   $("timer-bar").style.background = "var(--success)";
-  
   setTimeout(() => { $("timer-bar").style.transition = "width 1s linear"; }, 50);
 
   timerInterval = setInterval(() => {
     timeLeft--;
     $("timer-bar").style.width = `${(timeLeft/15)*100}%`;
-    
     if (timeLeft <= 5) $("timer-bar").style.background = "var(--danger)";
     else if (timeLeft <= 10) $("timer-bar").style.background = "var(--warning)";
 
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
-      handleAnswer(null, null); // หมดเวลา = ตอบผิด
+      handleAnswer(null, null); // หมดเวลา
     }
   }, 1000);
 }
@@ -419,22 +429,15 @@ function renderQuestion() {
   
   q.choices.forEach(choice => {
     let btn = document.createElement("button");
-    btn.className = "opt-btn";
-    btn.innerText = choice;
-    btn.onclick = () => {
-      clearInterval(timerInterval);
-      handleAnswer(choice, btn);
-    };
+    btn.className = "opt-btn"; btn.innerText = choice;
+    btn.onclick = () => { clearInterval(timerInterval); handleAnswer(choice, btn); };
     optCont.appendChild(btn);
   });
-
-  startTimer(); // เริ่มจับเวลาข้อใหม่
+  startTimer();
 }
 
 function handleAnswer(selectedChoice, btnElement) {
   const q = gameState.questions[gameState.currentIdx];
-  
-  // ปิดปุ่มทั้งหมดไม่ให้กดซ้ำ
   document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
 
   if(selectedChoice === q.a) {
@@ -450,8 +453,6 @@ function handleAnswer(selectedChoice, btnElement) {
     setTimeout(() => document.getElementById("app").classList.remove("shake-screen"), 400);
     gameState.hp--;
     gameState.combo = 1;
-    
-    // เฉลยข้อที่ถูกให้ดู
     document.querySelectorAll('.opt-btn').forEach(b => {
       if(b.innerText === q.a) b.classList.add("correct");
     });
@@ -461,22 +462,17 @@ function handleAnswer(selectedChoice, btnElement) {
     gameState.currentIdx++;
     if(gameState.currentIdx < gameState.questions.length && gameState.hp > 0) {
         renderQuestion();
-    } else { 
-        endGame(); 
-    }
-  }, 1500); // ดีเลย์ 1.5 วิให้เด็กดูเฉลยก่อนเปลี่ยนข้อ
+    } else { endGame(); }
+  }, 1500);
 }
 
 function useGlasses() {
-  if (hasUsedGlasses) return alert("คุณใช้แว่นตานักปราชญ์ไปแล้วในด่านนี้!");
-  
+  if (hasUsedGlasses) return alert("คุณใช้แว่นตานักปราชญ์ไปแล้ว!");
   const buttons = document.querySelectorAll('.opt-btn');
   const currentQ = gameState.questions[gameState.currentIdx];
-  
   for (let btn of buttons) {
     if (btn.innerText !== currentQ.a) {
-      btn.style.opacity = '0.2';
-      btn.disabled = true;
+      btn.style.opacity = '0.2'; btn.disabled = true;
       hasUsedGlasses = true;
       $("btn-use-glasses").disabled = true;
       $("btn-use-glasses").style.opacity = '0.5';
@@ -488,8 +484,7 @@ function useGlasses() {
 
 function endGame() {
   hide('screen-game'); show('screen-end');
-  clearInterval(timerInterval); // หยุดเวลา
-
+  clearInterval(timerInterval); 
   $("end-score").innerText = gameState.score;
   $("end-correct").innerText = gameState.correctCount;
   $("end-total").innerText = gameState.questions.length;
@@ -517,40 +512,71 @@ function endGame() {
   rankEl.style.background = `linear-gradient(135deg, ${rankColor}, #000)`;
   rankEl.style.boxShadow = `0 0 30px ${rankColor}88`;
 
-  // Anti-Cheat: ล็อกปุ่มส่งคะแนนถ้าเคยผ่านไปแล้ว
   if (currentStudent.module1Passed) {
     $("btn-submit").disabled = true;
-    $("btn-submit").innerText = "ส่งคะแนนผ่านเกณฑ์ไปแล้ว 🔒";
+    $("btn-submit").innerText = "สอบผ่านไปแล้ว ส่งคะแนนซ้ำไม่ได้ 🔒";
     $("btn-submit").style.background = "#475569";
   } else if (!isPass) {
-    // ถ้าตก ก็ไม่ให้ส่งคะแนน (บังคับเล่นใหม่)
     $("btn-submit").disabled = true;
-    $("btn-submit").innerText = "ต้องผ่าน 10 คะแนนจึงจะส่งได้";
+    $("btn-submit").innerText = "ต้องได้ 10 คะแนนขึ้นไปจึงจะบันทึกได้ 🔒";
     $("btn-submit").style.background = "#475569";
   } else {
     $("btn-submit").disabled = false;
-    $("btn-submit").innerText = "📤 ส่งผลคะแนนเข้า Google Sheet";
+    $("btn-submit").innerText = "📤 ส่งผลคะแนนเข้าระบบ";
     $("btn-submit").style.background = "linear-gradient(180deg, var(--primary), #7c3aed)";
   }
 }
 
+/* ================== ระบบส่งคะแนน และจัดอันดับ ================== */
 async function submitScore() {
   $("btn-submit").disabled = true;
   $("btn-submit").innerText = "กำลังอัปโหลด...";
-  // จำลองการส่ง
-  setTimeout(() => {
-    $("submit-msg").innerText = "✅ บันทึกคะแนนลงระบบเรียบร้อยแล้ว!";
+  
+  if (!SHEET_URL || SHEET_URL.trim() === "") {
+    setTimeout(() => {
+      $("submit-msg").innerText = "✅ (โหมดจำลอง) บันทึกคะแนนลงระบบเรียบร้อยแล้ว!";
+      show('submit-msg');
+      currentStudent.module1Passed = true; 
+    }, 1000);
+    return;
+  }
+
+  try {
+    const payload = { action: "submitScore", studentId: currentStudent.id, name: currentStudent.name, score: gameState.score, correct: gameState.correctCount };
+    await fetch(SHEET_URL, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    $("submit-msg").innerText = "✅ บันทึกคะแนนลงระบบของครูเรียบร้อยแล้ว!";
     show('submit-msg');
-    currentStudent.module1Passed = true; // บันทึกว่าส่งผ่านแล้ว
-  }, 1000);
+    currentStudent.module1Passed = true;
+  } catch(e) {
+    alert("การส่งขัดข้อง: " + e.message);
+    $("btn-submit").disabled = false;
+    $("btn-submit").innerText = "ลองส่งคะแนนอีกครั้ง";
+  }
 }
 
-/* ================== Ranking ================== */
-function renderRankingList() {
-  const mockPlayers = [{ name: "พงศธร", score: 1450 }, { name: "กฤษดา", score: 1280 }, { name: "ณิชชา", score: 1120 }, { name: "จิรวุฒิ", score: 1040 }, { name: "รินทร์", score: 980 }];
-  $("rank-list").innerHTML = mockPlayers.map((p, idx) => `
+async function renderRankingList() {
+  const container = $("rank-list");
+  container.innerHTML = `<div style="text-align:center; padding: 20px;"><span style="color:var(--primary);">กำลังซิงค์ข้อมูลอันดับ...</span></div>`;
+  
+  let players = [];
+  if (SHEET_URL && SHEET_URL.trim() !== "") {
+    try {
+      const res = await fetch(`${SHEET_URL}?action=getLeaderboard`);
+      players = await res.json();
+    } catch(e) { console.error(e); }
+  } 
+  
+  if (players.length === 0) {
+    players = [{ name: "พงศธร", score: 1450 }, { name: "กฤษดา", score: 1280 }, { name: "ณิชชา", score: 1120 }, { name: "จิรวุฒิ", score: 1040 }, { name: "รินทร์", score: 980 }];
+  }
+
+  container.innerHTML = players.map((p, idx) => `
     <div style="display:flex; justify-content:space-between; padding:12px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid var(--border);">
-      <div><b style="color:var(--text-muted);">#${idx + 1}</b> &nbsp; ${p.name}</div>
+      <div><b style="color:${idx<3 ? 'var(--warning)' : 'var(--text-muted)'};">#${idx + 1}</b> &nbsp; ${p.name}</div>
       <div style="color:var(--primary); font-weight:bold;">${p.score} EXP</div>
     </div>
   `).join('');
