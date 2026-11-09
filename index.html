@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UNI-QUEST: The Ultimate English Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* CSS ตัวเดิม (ปรับแก้ส่วน Timer นิดหน่อย) */
+:root {
+  --bg: #0b0f19; --card: #151a2e; --primary: #8b5cf6; --primary-glow: rgba(139, 92, 246, 0.4);
+  --secondary: #3b82f6; --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+  --text: #f8fafc; --text-muted: #64748b; --border: rgba(255, 255, 255, 0.08);
+}
+* { box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+body {
+  margin: 0; background-color: var(--bg); color: var(--text);
+  background-image: radial-gradient(circle at top right, #3b82f61a, transparent 50%),
+                    radial-gradient(circle at bottom left, #8b5cf62a, transparent 50%);
+  min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+  overflow-x: hidden; padding-bottom: 80px;
+}
+main { width: 100%; max-width: 480px; padding: 20px; position: relative; }
+
+.panel { background: var(--card); border-radius: 28px; padding: 24px; border: 1.5px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.55); margin-bottom: 20px; }
+.title-grad { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, #a78bfa, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.subtitle { color: var(--text-muted); font-size: 0.9rem; text-align: center; margin-bottom: 24px; }
+.input-group { margin-bottom: 16px; text-align: left; }
+.input-group label { display: block; font-size: 0.8rem; color: #a78bfa; margin-bottom: 6px; font-weight: 500; text-transform: uppercase; }
+input { width: 100%; padding: 14px; background: rgba(11,15,25,0.7); border: 2px solid var(--border); color: white; border-radius: 16px; font-size: 1rem; outline: none; transition: 0.3s; text-align: center; }
+input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
+
+.btn-quest { width: 100%; padding: 16px; border: none; border-radius: 18px; font-size: 1.1rem; font-weight: 600; color: white; cursor: pointer; transition: all 0.15s; background: linear-gradient(180deg, var(--primary), #7c3aed); box-shadow: 0 6px 0 #5b21b6, 0 10px 20px rgba(139, 92, 246, 0.3); margin-top: 10px; }
+.btn-quest:active { transform: translateY(4px); box-shadow: 0 2px 0 #5b21b6, 0 4px 10px rgba(139, 92, 246, 0.3); }
+.btn-quest:disabled { background: #475569; box-shadow: 0 6px 0 #1e293b; cursor: not-allowed; opacity: 0.6; }
+
+.avatar-frame { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; border: 4px solid var(--warning); background: linear-gradient(135deg, #1e1b4b, #311042); box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); position: relative; }
+.avatar-lvl { position: absolute; bottom: -5px; right: -5px; background: var(--primary); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid var(--card); }
+.exp-bar-bg { background: rgba(255,255,255,0.05); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 6px; border: 1.5px solid var(--border); }
+.exp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 45%; }
+.tab-container { display: flex; background: rgba(0,0,0,0.25); padding: 5px; border-radius: 14px; margin-bottom: 20px; border: 1.5px solid var(--border); }
+.tab-btn { flex: 1; padding: 8px; background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; border-radius: 10px; transition: 0.25s; font-size: 0.9rem; }
+.tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px var(--primary-glow); }
+
+.quest-card { background: rgba(255,255,255,0.02); border: 1.5px solid var(--border); border-radius: 20px; padding: 18px; margin-bottom: 14px; }
+.quest-status { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; padding: 4px 10px; border-radius: 8px; }
+.qs-pending { background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid var(--warning); }
+.qs-done { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid var(--success); }
+.qs-locked { background: rgba(100,116,139,0.15); color: var(--text-muted); border: 1px solid var(--text-muted); }
+.item-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.item-card { background: rgba(255,255,255,0.02); border: 1.5px solid var(--border); border-radius: 20px; padding: 16px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+.item-icon { font-size: 2.2rem; margin-bottom: 8px; }
+
+.opt-grid { display: grid; gap: 12px; }
+.opt-btn { background: var(--card); border: 2px solid rgba(255,255,255,0.1); color: white; padding: 16px; border-radius: 16px; font-size: 1rem; text-align: left; cursor: pointer; transition: 0.2s; }
+.opt-btn:hover { background: rgba(255,255,255,0.05); }
+.opt-btn.correct { background: rgba(16,185,129,0.2) !important; border-color: var(--success) !important; color: var(--success); }
+.opt-btn.wrong { background: rgba(239,68,68,0.2) !important; border-color: var(--danger) !important; color: var(--danger); }
+
+/* Animation เขย่าจอเวลาตอบผิด */
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+.shake-screen { animation: shake 0.4s; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #0f172aee; backdrop-filter: blur(15px); border-top: 1.5px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0 20px 0; z-index: 100; box-shadow: 0 -8px 30px rgba(0,0,0,0.5); }
+.nav-item { background: none; border: none; color: var(--text-muted); font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.25s; }
+.nav-item.active { color: var(--primary); }
+.nav-item i { font-size: 1.5rem; font-style: normal; }
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<main id="app">
+
+  <!-- ================= LOBBY / LOGIN ================= -->
+  <div id="screen-login" class="panel">
+    <div style="text-align: center; font-size: 5rem; margin-bottom: 10px; filter: drop-shadow(0 0 15px var(--primary-glow));">🪐</div>
+    <h1 class="title-grad">UNI-QUEST 2</h1>
+    <p class="subtitle">วิชาภาษาอังกฤษเพื่อการศึกษาต่อ 2 (อ30212)</p>
+    <div class="input-group">
+      <label>รหัสนักเรียน (5 หลัก)</label>
+      <input type="text" id="student-id" placeholder="ตัวอย่าง 12345" inputmode="numeric" maxlength="5">
+    </div>
+    <div class="input-group">
+      <label>ชื่อจริงภาษาไทย (ไม่ต้องกรอกนามสกุล)</label>
+      <input type="text" id="student-name" placeholder="ตัวอย่าง สมพงษ์" autocomplete="off">
+    </div>
+    <button class="btn-quest" id="btn-login" onclick="playSound('click'); handleLogin();">เริ่มการเดินทาง ⚔️</button>
+  </div>
+
+  <!-- ================= DASHBOARD ================= -->
+  <div id="screen-dashboard" class="hidden">
+    <div class="panel" style="display:flex; gap:16px; align-items:center;">
+      <div class="avatar-frame" id="main-avatar">🧙‍♂️<div class="avatar-lvl">5</div></div>
+      <div style="flex:1;">
+        <h3 id="player-name-txt" style="margin:0; font-size:1.25rem; color:#fff;">ชื่อนักเรียน</h3>
+        <p style="margin:4px 0; font-size:0.85rem; color:var(--text-muted);">ระดับผู้กล้า: <b style="color:var(--warning)">Scholarship Hunter 🎖️</b></p>
+        <div class="exp-bar-bg"><div class="exp-bar-fill"></div></div>
+      </div>
+    </div>
+    <div class="panel" style="border-color: rgba(245, 158, 11, 0.3); background: linear-gradient(135deg, rgba(245,158,11,0.05), transparent);">
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <span style="color:var(--warning); font-weight:600; font-size:0.95rem;">⚠️ ข่าวสารภารกิจด่วน</span>
+        <span class="quest-status qs-pending" style="font-size:0.6rem;">EXAM</span>
+      </div>
+      <h3 style="margin:0 0 6px 0; font-size:1.1rem;">Module 1: University Gateway</h3>
+      <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">บุกมหาวิทยาลัยและฝ่าด่านคำศัพท์! มีกำหนดส่งภายในสัปดาห์นี้</p>
+    </div>
+  </div>
+
+  <!-- ================= QUEST BOARD ================= -->
+  <div id="screen-quests" class="hidden">
+    <div class="tab-container">
+      <button class="tab-btn active" onclick="playSound('click'); switchQuestTab('main')">MAIN (หลัก)</button>
+      <button class="tab-btn" onclick="playSound('click'); switchQuestTab('side')">SIDE (เสริม)</button>
+    </div>
+    <div id="tab-main-quests">
+      <div class="quest-card">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+          <span class="quest-status qs-pending" id="status-module1">PENDING</span>
+        </div>
+        <h3 style="margin:0 0 6px 0;">⚔️ Module 1: University Gateway</h3>
+        <p style="margin:0 0 15px 0; font-size:0.8rem; color:var(--text-muted);">ทดสอบความเข้าใจ 15 ข้อ (มีจับเวลา 15 วินาที/ข้อ)</p>
+        <button class="btn-quest" id="btn-start-m1" style="padding:10px 14px; font-size:0.95rem;" onclick="playSound('click'); startModule1Game()">บุกเข้าทำด่านทดสอบ 🎮</button>
+      </div>
+    </div>
+    <div id="tab-side-quests" class="hidden">
+      <div class="quest-card">
+        <h3 style="margin:0 0 6px 0;">📜 สมุดจดศัพท์ (Vocabulary Log)</h3>
+        <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">นำสมุดไปส่งที่คุณครูเพื่อรับแต้ม EXP</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= INVENTORY ================= -->
+  <div id="screen-inventory" class="hidden">
+    <div class="tab-container">
+      <button class="tab-btn active" onclick="playSound('click'); switchInvTab('rewards')">🎁 คลังรางวัล</button>
+      <button class="tab-btn" onclick="playSound('click'); switchInvTab('mats')">📚 ทรัพยากร</button>
+    </div>
+    <div id="inv-rewards-view" class="item-grid">
+      <div class="item-card">
+        <div class="item-icon">👓</div>
+        <h4 style="margin:0 0 4px 0; font-size:0.95rem;">แว่นตานักปราชญ์</h4>
+        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">ตัด 1 ชอยส์ (ใช้ได้ในด่านทดสอบ)</p>
+      </div>
+      <div class="item-card">
+        <div class="item-icon">🧝‍♀️</div>
+        <h4 style="margin:0 0 4px 0; font-size:0.95rem;">นักรบเอลฟ์</h4>
+        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">นักปราชญ์แห่งป่า</p>
+        <button class="btn-quest" style="padding:5px 10px; font-size:0.75rem; margin:0;" onclick="playSound('click'); equipAvatar('🧝‍♀️')">สวมใส่</button>
+      </div>
+      <div class="item-card">
+        <div class="item-icon">🤖</div>
+        <h4 style="margin:0 0 4px 0; font-size:0.95rem;">ไซบอร์ก</h4>
+        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">ผู้เชี่ยวชาญไอที</p>
+        <button class="btn-quest" style="padding:5px 10px; font-size:0.75rem; margin:0;" onclick="playSound('click'); equipAvatar('🤖')">สวมใส่</button>
+      </div>
+    </div>
+    <div id="inv-mats-view" class="hidden">
+      <div class="quest-card">
+        <h3 style="margin:0 0 4px 0; font-size:0.95rem;">📓 Workbook: Module 1</h3>
+        <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">เอกสารประกอบการเรียนและแบบฝึกหัด</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= BATTLE SCREEN (ข้อสอบ) ================= -->
+  <div id="screen-game" class="hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(30,41,59,0.8); padding: 12px 20px; border-radius: 16px; border: 1.5px solid var(--border); margin-bottom:16px;">
+      <div style="display:flex; flex-direction:column; align-items:center;"><span style="font-size:0.7rem; color:var(--text-muted);">HP</span><span style="font-size:1.2rem; color:var(--danger);" id="hud-hp">❤️❤️❤️</span></div>
+      <div style="display:flex; flex-direction:column; align-items:center;"><span style="font-size:0.7rem; color:var(--text-muted);">SCORE</span><span style="font-size:1.2rem; font-weight:700;" id="hud-score">0</span></div>
+      <div style="display:flex; flex-direction:column; align-items:center;"><span style="font-size:0.7rem; color:var(--text-muted);">COMBO</span><span style="font-size:1.2rem; font-weight:700; color:var(--warning);" id="hud-combo">x1</span></div>
+    </div>
+    
+    <div class="panel" style="border: 2px solid var(--primary); text-align:center; margin-bottom: 10px; padding-top: 15px;">
+      <!-- แถบเวลา -->
+      <div style="background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; margin-bottom: 15px; overflow: hidden;">
+        <div id="timer-bar" style="background: var(--success); width: 100%; height: 100%;"></div>
+      </div>
+
+      <div style="background:var(--primary); padding:2px 12px; border-radius:10px; font-size:0.8rem; display:inline-block; font-weight:bold; margin-bottom:12px;" id="q-counter">Q 1/15</div>
+      <div class="q-text" id="q-text" style="font-size:1.15rem; font-weight:600; line-height:1.5;">Question?</div>
+    </div>
+
+    <!-- ปุ่มใช้ไอเทม -->
+    <div style="text-align: right; margin-bottom: 15px;">
+      <button id="btn-use-glasses" style="background: rgba(139, 92, 246, 0.2); border: 1px solid var(--primary); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer;" onclick="playSound('click'); useGlasses()">
+        👓 ใช้แว่นตาตัดชอยส์ผิด (1 ครั้ง)
+      </button>
+    </div>
+    
+    <div class="opt-grid" id="opt-container"></div>
+  </div>
+
+  <!-- ================= END SCREEN ================= -->
+  <div id="screen-end" class="panel hidden">
+    <h2 style="margin-bottom: 20px; color: var(--text-muted); text-align:center;">MISSION COMPLETE!</h2>
+    <div style="width: 120px; height: 120px; margin: 0 auto 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: bold; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; box-shadow: 0 0 30px rgba(245,158,11,0.5);" id="end-rank">S</div>
+    
+    <div style="text-align: center; margin-bottom: 20px;" id="end-pass-status"></div>
+
+    <div style="text-align: center; margin-bottom: 30px;">
+      <h1 style="font-size: 3rem; margin: 0;" id="end-score">0</h1>
+      <p style="font-size: 1.15rem;">ตอบถูก <b id="end-correct" style="color:var(--success)">0</b> จาก <span id="end-total">15</span> ข้อ</p>
+    </div>
+
+    <button class="btn-quest" id="btn-submit" onclick="playSound('click'); submitScore()">📤 ส่งผลคะแนนเข้า Google Sheet</button>
+    <button class="btn-quest" style="background: linear-gradient(180deg, #64748b, #475569); box-shadow: 0 6px 0 #334155; margin-top:12px;" onclick="playSound('click'); location.reload()">🏠 กลับหน้าหลัก</button>
+    <div id="submit-msg" style="text-align:center; padding:10px; border-radius:10px; margin-top:15px; font-size:0.9rem;" class="hidden"></div>
+  </div>
+
+  <!-- ================= RANKING ================= -->
+  <div id="screen-ranking" class="hidden panel">
+    <h2 style="color:var(--warning); text-align:center;">🏆 จัดอันดับ Top 5</h2>
+    <div id="rank-list" style="display:flex; flex-direction:column; gap:8px; margin-top:20px;"></div>
+  </div>
+
+  <!-- ================= BOTTOM NAV ================= -->
+  <nav class="bottom-nav hidden" id="bottom-bar">
+    <button class="nav-item active" onclick="playSound('click'); switchNavTab('dashboard')"><i>🏠</i><span>หน้าแรก</span></button>
+    <button class="nav-item" onclick="playSound('click'); switchNavTab('quests')"><i>📜</i><span>ภารกิจ</span></button>
+    <button class="nav-item" onclick="playSound('click'); switchNavTab('inventory')"><i>🎒</i><span>คลังไอเทม</span></button>
+    <button class="nav-item" onclick="playSound('click'); switchNavTab('ranking'); renderRankingList();"><i>🏆</i><span>จัดอันดับ</span></button>
+  </nav>
+
+</main>
+
+<script>
+/* ================== URL ตั้งค่า ================== */
+const JSON_URL = "https://raw.githubusercontent.com/Paloliiz/english4futurestudies2-69/refs/heads/main/module1.json"; 
+const SHEET_URL = ""; 
+
+let currentStudent = null;
+const $ = id => document.getElementById(id);
+const show = id => $(id).classList.remove('hidden');
+const hide = id => $(id).classList.add('hidden');
+
+/* ================== ระบบเสียง (Web Audio API) ================== */
+// สร้างเสียงในตัว ไม่ต้องง้อไฟล์ .mp3!
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+
+function playSound(type) {
+  if (!audioCtx) audioCtx = new AudioContext();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  
+  const now = audioCtx.currentTime;
+  
+  if (type === 'click') {
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+    osc.start(now); osc.stop(now + 0.1);
+  } else if (type === 'correct') {
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.setValueAtTime(1200, now + 0.1); 
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.linearRampToValueAtTime(0, now + 0.3);
+    osc.start(now); osc.stop(now + 0.3);
+  } else if (type === 'wrong') {
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, now);
+    osc.frequency.linearRampToValueAtTime(100, now + 0.3);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.linearRampToValueAtTime(0, now + 0.3);
+    osc.start(now); osc.stop(now + 0.3);
+  } else if (type === 'victory') {
+    // เล่นคอร์ดสั้นๆ 3 ตัวโน้ต
+    [523.25, 659.25, 783.99].forEach((freq, i) => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine'; o.connect(g); g.connect(audioCtx.destination);
+      o.frequency.value = freq;
+      const t = now + (i * 0.15);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.1, t + 0.05);
+      g.gain.linearRampToValueAtTime(0, t + 0.5);
+      o.start(t); o.stop(t + 0.5);
+    });
+  }
+}
+
+/* ================== นำทาง (Navigation) ================== */
+function switchNavTab(tab) {
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  ['dashboard', 'quests', 'inventory', 'ranking', 'game', 'end'].forEach(name => hide('screen-' + name));
+  show('screen-' + tab);
+}
+function switchQuestTab(type) {
+  document.querySelectorAll('#screen-quests .tab-btn').forEach(btn => btn.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if(type === 'main') { show('tab-main-quests'); hide('tab-side-quests'); } else { hide('tab-main-quests'); show('tab-side-quests'); }
+}
+function switchInvTab(type) {
+  document.querySelectorAll('#screen-inventory .tab-btn').forEach(btn => btn.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if(type === 'rewards') { show('inv-rewards-view'); hide('inv-mats-view'); } else { hide('inv-rewards-view'); show('inv-mats-view'); }
+}
+
+function equipAvatar(newAvatar) {
+  $("main-avatar").innerHTML = `${newAvatar}<div class="avatar-lvl">5</div>`;
+  alert(`✨ สวมใส่ตัวละคร ${newAvatar} เรียบร้อยแล้ว!`);
+}
+
+/* ================== ระบบล็อกอิน ================== */
+async function handleLogin() {
+  const stdId = $("student-id").value.trim();
+  const stdName = $("student-name").value.trim();
+  if(!stdId || !stdName) return alert("กรุณากรอกข้อมูลให้ครบถ้วน!");
+  
+  // จำลองข้อมูลเข้าสู่ระบบ พร้อมระบบ Anti-cheat เช็กว่าเคยผ่านหรือยัง
+  currentStudent = { 
+      id: stdId, 
+      name: stdName, 
+      cls: "6/1", 
+      module1Passed: false // ถ้าสมมติว่าสอบผ่านแล้วให้แก้เป็น true ปุ่มจะล็อกทันที
+  };
+
+  $("player-name-txt").innerText = `${stdName} (ม.6/1)`;
+  
+  // เช็กหน้าเควสต์
+  if (currentStudent.module1Passed) {
+      $("status-module1").innerText = "PASSED";
+      $("status-module1").className = "quest-status qs-done";
+      $("btn-start-m1").innerText = "สอบผ่านแล้ว 🎉";
+      $("btn-start-m1").disabled = true;
+  }
+
+  hide('screen-login'); show('screen-dashboard'); show('bottom-bar');
+}
+
+/* ================== ระบบเกม & จับเวลา ================== */
+const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
+let gameState = { questions: [], currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
+let hasUsedGlasses = false;
+let timerInterval;
+let timeLeft = 15;
+
+const fallbackQuestions = [
+  { q: "คำว่า <b>dormitory</b> แปลว่าอะไร?", a: "หอพักนักศึกษา", choices: ["หอพักนักศึกษา", "ห้องสมุด", "วิทยาเขต", "คณะ"] },
+  { q: "เติมคำที่คู่กัน: _____ the deadline (ส่งงานทันกำหนด)", a: "meet", choices: ["submit", "meet", "take", "pay"] },
+  { q: "เลือกคำที่สะกด <b>ถูกต้อง</b>", a: "scholarship", choices: ["scholorship", "scholarship", "scholarchip", "scolarship"] }
+];
+
+async function startModule1Game() {
+  hide('screen-quests'); hide('bottom-bar'); show('screen-game');
+  $("q-text").innerHTML = "กำลังโหลดข้อสอบจากคลังเวทมนตร์...";
+  
+  hasUsedGlasses = false;
+  $("btn-use-glasses").disabled = false;
+  $("btn-use-glasses").style.opacity = '1';
+
+  try {
+    let loadedQuestions = fallbackQuestions;
+    if (JSON_URL) {
+      const response = await fetch(JSON_URL);
+      loadedQuestions = await response.json();
+    }
+    
+    const shuffledBank = shuffleArray([...loadedQuestions]);
+    const selectedQuestions = shuffledBank.slice(0, 15);
+
+    const finalQuestions = selectedQuestions.map(q => {
+      return { ...q, choices: (q.choices.length === 2) ? q.choices : shuffleArray([...q.choices]) };
+    });
+    
+    gameState = { questions: finalQuestions, currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
+    renderQuestion();
+  } catch (error) {
+    alert("โหลดข้อสอบล้มเหลว ใช้ข้อสอบสำรองแทน");
+    gameState = { questions: fallbackQuestions, currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
+    renderQuestion();
+  }
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = 15;
+  $("timer-bar").style.transition = "none";
+  $("timer-bar").style.width = "100%";
+  $("timer-bar").style.background = "var(--success)";
+  
+  setTimeout(() => { $("timer-bar").style.transition = "width 1s linear"; }, 50);
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    $("timer-bar").style.width = `${(timeLeft/15)*100}%`;
+    
+    if (timeLeft <= 5) $("timer-bar").style.background = "var(--danger)";
+    else if (timeLeft <= 10) $("timer-bar").style.background = "var(--warning)";
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      handleAnswer(null, null); // หมดเวลา = ตอบผิด
+    }
+  }, 1000);
+}
+
+function renderQuestion() {
+  const q = gameState.questions[gameState.currentIdx];
+  $("q-counter").innerText = `Question ${gameState.currentIdx + 1} / ${gameState.questions.length}`;
+  $("q-text").innerHTML = q.q;
+  $("hud-hp").innerText = "❤️".repeat(gameState.hp) + "🖤".repeat(3-gameState.hp);
+  $("hud-score").innerText = gameState.score;
+  $("hud-combo").innerText = `x${gameState.combo}`;
+  
+  const optCont = $("opt-container");
+  optCont.innerHTML = "";
+  
+  q.choices.forEach(choice => {
+    let btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.innerText = choice;
+    btn.onclick = () => {
+      clearInterval(timerInterval);
+      handleAnswer(choice, btn);
+    };
+    optCont.appendChild(btn);
+  });
+
+  startTimer(); // เริ่มจับเวลาข้อใหม่
+}
+
+function handleAnswer(selectedChoice, btnElement) {
+  const q = gameState.questions[gameState.currentIdx];
+  
+  // ปิดปุ่มทั้งหมดไม่ให้กดซ้ำ
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+
+  if(selectedChoice === q.a) {
+    if(btnElement) btnElement.classList.add("correct");
+    playSound('correct');
+    gameState.score += 100 * gameState.combo;
+    gameState.combo++;
+    gameState.correctCount++;
+  } else {
+    if(btnElement) btnElement.classList.add("wrong");
+    playSound('wrong');
+    document.getElementById("app").classList.add("shake-screen");
+    setTimeout(() => document.getElementById("app").classList.remove("shake-screen"), 400);
+    gameState.hp--;
+    gameState.combo = 1;
+    
+    // เฉลยข้อที่ถูกให้ดู
+    document.querySelectorAll('.opt-btn').forEach(b => {
+      if(b.innerText === q.a) b.classList.add("correct");
+    });
+  }
+
+  setTimeout(() => {
+    gameState.currentIdx++;
+    if(gameState.currentIdx < gameState.questions.length && gameState.hp > 0) {
+        renderQuestion();
+    } else { 
+        endGame(); 
+    }
+  }, 1500); // ดีเลย์ 1.5 วิให้เด็กดูเฉลยก่อนเปลี่ยนข้อ
+}
+
+function useGlasses() {
+  if (hasUsedGlasses) return alert("คุณใช้แว่นตานักปราชญ์ไปแล้วในด่านนี้!");
+  
+  const buttons = document.querySelectorAll('.opt-btn');
+  const currentQ = gameState.questions[gameState.currentIdx];
+  
+  for (let btn of buttons) {
+    if (btn.innerText !== currentQ.a) {
+      btn.style.opacity = '0.2';
+      btn.disabled = true;
+      hasUsedGlasses = true;
+      $("btn-use-glasses").disabled = true;
+      $("btn-use-glasses").style.opacity = '0.5';
+      playSound('click');
+      break;
+    }
+  }
+}
+
+function endGame() {
+  hide('screen-game'); show('screen-end');
+  clearInterval(timerInterval); // หยุดเวลา
+
+  $("end-score").innerText = gameState.score;
+  $("end-correct").innerText = gameState.correctCount;
+  $("end-total").innerText = gameState.questions.length;
+  
+  const passThreshold = 10;
+  const isPass = gameState.correctCount >= passThreshold;
+  
+  const statusEl = $("end-pass-status");
+  if (isPass) {
+    playSound('victory');
+    statusEl.innerHTML = `<span style="background: rgba(16,185,129,0.2); color: var(--success); padding: 6px 16px; border-radius: 12px; font-weight: bold;">🎉 ผ่านเกณฑ์!</span>`;
+  } else {
+    playSound('wrong');
+    statusEl.innerHTML = `<span style="background: rgba(239,68,68,0.2); color: var(--danger); padding: 6px 16px; border-radius: 12px; font-weight: bold;">❌ ไม่ผ่านเกณฑ์ (ต้องได้ 10 ข้อขึ้นไป)</span>`;
+  }
+  
+  let rank = "F"; let rankColor = "#ef4444"; 
+  if (gameState.correctCount === gameState.questions.length) { rank = "S"; rankColor = "#fbbf24"; } 
+  else if (gameState.correctCount >= 12) { rank = "A"; rankColor = "#10b981"; } 
+  else if (gameState.correctCount >= 10) { rank = "B"; rankColor = "#3b82f6"; } 
+  else { rank = "C"; rankColor = "#ef4444"; }
+  
+  const rankEl = $("end-rank");
+  rankEl.innerText = rank;
+  rankEl.style.background = `linear-gradient(135deg, ${rankColor}, #000)`;
+  rankEl.style.boxShadow = `0 0 30px ${rankColor}88`;
+
+  // Anti-Cheat: ล็อกปุ่มส่งคะแนนถ้าเคยผ่านไปแล้ว
+  if (currentStudent.module1Passed) {
+    $("btn-submit").disabled = true;
+    $("btn-submit").innerText = "ส่งคะแนนผ่านเกณฑ์ไปแล้ว 🔒";
+    $("btn-submit").style.background = "#475569";
+  } else if (!isPass) {
+    // ถ้าตก ก็ไม่ให้ส่งคะแนน (บังคับเล่นใหม่)
+    $("btn-submit").disabled = true;
+    $("btn-submit").innerText = "ต้องผ่าน 10 คะแนนจึงจะส่งได้";
+    $("btn-submit").style.background = "#475569";
+  } else {
+    $("btn-submit").disabled = false;
+    $("btn-submit").innerText = "📤 ส่งผลคะแนนเข้า Google Sheet";
+    $("btn-submit").style.background = "linear-gradient(180deg, var(--primary), #7c3aed)";
+  }
+}
+
+async function submitScore() {
+  $("btn-submit").disabled = true;
+  $("btn-submit").innerText = "กำลังอัปโหลด...";
+  // จำลองการส่ง
+  setTimeout(() => {
+    $("submit-msg").innerText = "✅ บันทึกคะแนนลงระบบเรียบร้อยแล้ว!";
+    show('submit-msg');
+    currentStudent.module1Passed = true; // บันทึกว่าส่งผ่านแล้ว
+  }, 1000);
+}
+
+/* ================== Ranking ================== */
+function renderRankingList() {
+  const mockPlayers = [{ name: "พงศธร", score: 1450 }, { name: "กฤษดา", score: 1280 }, { name: "ณิชชา", score: 1120 }, { name: "จิรวุฒิ", score: 1040 }, { name: "รินทร์", score: 980 }];
+  $("rank-list").innerHTML = mockPlayers.map((p, idx) => `
+    <div style="display:flex; justify-content:space-between; padding:12px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid var(--border);">
+      <div><b style="color:var(--text-muted);">#${idx + 1}</b> &nbsp; ${p.name}</div>
+      <div style="color:var(--primary); font-weight:bold;">${p.score} EXP</div>
+    </div>
+  `).join('');
+}
+</script>
+</body>
+</html>
