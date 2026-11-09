@@ -35,7 +35,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 
 .btn-quest { width: 100%; padding: 16px; border: none; border-radius: 18px; font-size: 1.1rem; font-weight: 600; color: white; cursor: pointer; transition: all 0.15s; background: linear-gradient(180deg, var(--primary), #7c3aed); box-shadow: 0 6px 0 #5b21b6, 0 10px 20px rgba(139, 92, 246, 0.3); margin-top: 10px; }
 .btn-quest:active { transform: translateY(4px); box-shadow: 0 2px 0 #5b21b6, 0 4px 10px rgba(139, 92, 246, 0.3); }
-.btn-quest:disabled { background: #475569; box-shadow: 0 6px 0 #1e293b; cursor: not-allowed; opacity: 0.6; }
+.btn-quest:disabled { background: #475569 !important; box-shadow: 0 6px 0 #1e293b !important; cursor: not-allowed; opacity: 0.6; }
 
 .avatar-frame { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; border: 4px solid var(--warning); background: linear-gradient(135deg, #1e1b4b, #311042); box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); position: relative; }
 .avatar-lvl { position: absolute; bottom: -5px; right: -5px; background: var(--primary); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid var(--card); }
@@ -62,6 +62,11 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 .shake-screen { animation: shake 0.4s; }
+
+/* Gacha Card Animation */
+.gacha-card { padding: 20px; background: linear-gradient(135deg, #1e1b4b, #311042); border-radius: 20px; border: 2px dashed var(--warning); margin: 20px 0; text-align: center; transition: all 0.5s; }
+.gacha-card.revealed { background: linear-gradient(135deg, #064e3b, #0f766e); border: 2px solid var(--success); transform: scale(1.05); }
+.gacha-card.revealed-bad { background: linear-gradient(135deg, #7f1d1d, #991b1b); border: 2px solid var(--danger); transform: scale(1.05); }
 
 .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #0f172aee; backdrop-filter: blur(15px); border-top: 1.5px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0 20px 0; z-index: 100; box-shadow: 0 -8px 30px rgba(0,0,0,0.5); }
 .nav-item { background: none; border: none; color: var(--text-muted); font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.25s; }
@@ -99,11 +104,15 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
   <!-- ================= DASHBOARD ================= -->
   <div id="screen-dashboard" class="hidden" style="margin-top: 40px;">
     <div class="panel" style="display:flex; gap:16px; align-items:center;">
-      <div class="avatar-frame" id="main-avatar">🧙‍♂️<div class="avatar-lvl">5</div></div>
+      <div class="avatar-frame" id="main-avatar">👶<div class="avatar-lvl" id="player-lvl">1</div></div>
       <div style="flex:1;">
         <h3 id="player-name-txt" style="margin:0; font-size:1.25rem; color:#fff;">ชื่อนักเรียน</h3>
-        <p style="margin:4px 0; font-size:0.85rem; color:var(--text-muted);">ระดับผู้กล้า: <b style="color:var(--warning)" id="player-title">Scholarship Hunter 🎖️</b></p>
-        <div class="exp-bar-bg"><div class="exp-bar-fill"></div></div>
+        <p style="margin:4px 0; font-size:0.85rem; color:var(--text-muted);">ฉายา: <b style="color:var(--warning)" id="player-title">Novice Scholar 👶</b></p>
+        <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:5px;">
+          <span>EXP รวม</span>
+          <span id="player-exp">0</span>
+        </div>
+        <div class="exp-bar-bg"><div class="exp-bar-fill" id="exp-bar-fill"></div></div>
       </div>
     </div>
     <div class="panel" style="border-color: rgba(245, 158, 11, 0.3); background: linear-gradient(135deg, rgba(245,158,11,0.05), transparent);">
@@ -150,18 +159,18 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
       <div class="item-card">
         <div class="item-icon">👓</div>
         <h4 style="margin:0 0 4px 0; font-size:0.95rem;">แว่นตานักปราชญ์</h4>
-        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">ตัด 1 ชอยส์ (ใช้ได้ในด่านทดสอบ)</p>
+        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">มี <span id="item-glasses-count" style="color:var(--success); font-weight:bold;">1</span> ชิ้น (ใช้ในห้องสอบ)</p>
       </div>
       <div class="item-card">
         <div class="item-icon">🧝‍♀️</div>
         <h4 style="margin:0 0 4px 0; font-size:0.95rem;">นักรบเอลฟ์</h4>
-        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">นักปราชญ์แห่งป่า</p>
+        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">สกินตัวละครพิเศษ</p>
         <button class="btn-quest" style="padding:5px 10px; font-size:0.75rem; margin:0;" onclick="playSound('click'); equipAvatar('🧝‍♀️')">สวมใส่</button>
       </div>
       <div class="item-card">
         <div class="item-icon">🤖</div>
         <h4 style="margin:0 0 4px 0; font-size:0.95rem;">ไซบอร์ก</h4>
-        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">ผู้เชี่ยวชาญไอที</p>
+        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">สกินตัวละครพิเศษ</p>
         <button class="btn-quest" style="padding:5px 10px; font-size:0.75rem; margin:0;" onclick="playSound('click'); equipAvatar('🤖')">สวมใส่</button>
       </div>
     </div>
@@ -191,23 +200,32 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 
     <div style="text-align: right; margin-bottom: 15px;">
       <button id="btn-use-glasses" style="background: rgba(139, 92, 246, 0.2); border: 1px solid var(--primary); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer;" onclick="playSound('click'); useGlasses()">
-        👓 ใช้แว่นตาตัดชอยส์ผิด (1 ครั้ง)
+        👓 ใช้แว่นตาตัดชอยส์ผิด
       </button>
     </div>
     <div class="opt-grid" id="opt-container"></div>
   </div>
 
-  <!-- ================= END SCREEN ================= -->
+  <!-- ================= END SCREEN & GACHA ================= -->
   <div id="screen-end" class="panel hidden" style="margin-top: 40px;">
     <h2 style="margin-bottom: 20px; color: var(--text-muted); text-align:center;">MISSION COMPLETE!</h2>
     <div style="width: 120px; height: 120px; margin: 0 auto 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: bold; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; box-shadow: 0 0 30px rgba(245,158,11,0.5);" id="end-rank">S</div>
-    <div style="text-align: center; margin-bottom: 20px;" id="end-pass-status"></div>
-    <div style="text-align: center; margin-bottom: 30px;">
+    <div style="text-align: center; margin-bottom: 15px;" id="end-pass-status"></div>
+    <div style="text-align: center; margin-bottom: 20px;">
       <h1 style="font-size: 3rem; margin: 0;" id="end-score">0</h1>
       <p style="font-size: 1.15rem;">ตอบถูก <b id="end-correct" style="color:var(--success)">0</b> จาก <span id="end-total">15</span> ข้อ</p>
     </div>
-    <button class="btn-quest" id="btn-submit" onclick="playSound('click'); submitScore()">📤 ส่งผลคะแนนเข้า Google Sheet</button>
-    <button class="btn-quest" style="background: linear-gradient(180deg, #64748b, #475569); box-shadow: 0 6px 0 #334155; margin-top:12px;" onclick="playSound('click'); location.reload()">🏠 กลับหน้าหลัก</button>
+
+    <!-- ระบบ GACHA สุ่มรางวัล -->
+    <div class="gacha-card" id="gacha-area">
+      <h3 style="margin: 0 0 10px 0; color:var(--warning);">🃏 โบนัสหลังจบเกม!</h3>
+      <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom:15px;">ลุ้นรับ EXP เพิ่ม, ไอเทมแว่นตา, หรือโดนหักคะแนน...</p>
+      <button class="btn-quest" style="margin:0; padding:10px; background:linear-gradient(180deg, #f59e0b, #d97706); box-shadow:0 6px 0 #b45309;" onclick="playSound('click'); drawGacha()">👉 กดเพื่อเปิดไพ่เสี่ยงดวง</button>
+    </div>
+
+    <!-- ปุ่มส่งคะแนนและกลับหน้าแรก -->
+    <button class="btn-quest" id="btn-submit" onclick="playSound('click'); submitScore()" style="display:none;">📤 ส่งผลคะแนนเข้า Google Sheet</button>
+    <button class="btn-quest" style="background: linear-gradient(180deg, #64748b, #475569); box-shadow: 0 6px 0 #334155; margin-top:12px;" onclick="playSound('click'); returnToDashboard()">🏠 กลับไปหน้าข้อมูล</button>
     <div id="submit-msg" style="text-align:center; padding:10px; border-radius:10px; margin-top:15px; font-size:0.9rem;" class="hidden"></div>
   </div>
 
@@ -232,36 +250,29 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 const JSON_URL = "https://raw.githubusercontent.com/Paloliiz/english4futurestudies2-69/refs/heads/main/module1.json"; 
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbxOknhio71rK1NiESL2JLzQTt-qLfArXUZl4y4e8vhwtuFa8UuBrwKU4BID6Wn--ZueSw/exec"; 
 
-let currentStudent = null;
+let currentStudent = { id: "", name: "", cls: "6/1", score: 0, level: 1, title: "Novice Scholar 👶", glasses: 1, module1Passed: false };
 const $ = id => document.getElementById(id);
 const show = id => $(id).classList.remove('hidden');
 const hide = id => $(id).classList.add('hidden');
 
-/* ================== ระบบเช็กสถานะ API ================== */
+/* ================== ระบบสถานะ API ================== */
 window.onload = () => {
-  const dot = $("api-dot");
-  const txt = $("api-text");
+  const dot = $("api-dot"); const txt = $("api-text");
   if (!SHEET_URL || SHEET_URL.trim() === "") {
-    dot.style.background = "var(--warning)";
-    dot.style.boxShadow = "0 0 8px var(--warning)";
-    txt.innerText = "โหมดจำลอง (ยังไม่เชื่อม API)";
+    dot.style.background = "var(--warning)"; dot.style.boxShadow = "0 0 8px var(--warning)"; txt.innerText = "โหมดจำลอง (ยังไม่เชื่อม API)";
   } else {
-    dot.style.background = "var(--success)";
-    dot.style.boxShadow = "0 0 8px var(--success)";
-    txt.innerText = "เชื่อมต่อระบบฐานข้อมูลสำเร็จ";
+    dot.style.background = "var(--success)"; dot.style.boxShadow = "0 0 8px var(--success)"; txt.innerText = "เชื่อมต่อระบบฐานข้อมูลสำเร็จ";
   }
 };
 
-/* ================== ระบบเสียง ================== */
+/* ================== ระบบเสียง (Web Audio API) ================== */
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
 function playSound(type) {
   if (!audioCtx) audioCtx = new AudioContext();
   if (audioCtx.state === 'suspended') audioCtx.resume();
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+  osc.connect(gain); gain.connect(audioCtx.destination); const now = audioCtx.currentTime;
   if (type === 'click') {
     osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
     gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
@@ -282,13 +293,42 @@ function playSound(type) {
       g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.1, t + 0.05); g.gain.linearRampToValueAtTime(0, t + 0.5);
       o.start(t); o.stop(t + 0.5);
     });
+  } else if (type === 'gacha') {
+    osc.type = 'square'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.4);
+    gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.5);
+    osc.start(now); osc.stop(now + 0.5);
   }
 }
 
-/* ================== นำทาง (Navigation) ================== */
+/* ================== ระบบ Level และ Title ================== */
+function updatePlayerStats() {
+  // คำนวณเลเวล: ทุกๆ 500 EXP จะขึ้น 1 เลเวล
+  const score = currentStudent.score;
+  let lvl = 1; let title = "Novice Scholar 👶"; let progress = 0;
+  
+  if (score < 500) { lvl = 1; title = "Novice Scholar 👶"; progress = (score/500)*100; }
+  else if (score < 1000) { lvl = 2; title = "Trainee Adventurer 🏕️"; progress = ((score-500)/500)*100; }
+  else if (score < 1500) { lvl = 3; title = "Quest Explorer 🧭"; progress = ((score-1000)/500)*100; }
+  else if (score < 2500) { lvl = 4; title = "Scholarship Hunter 🎖️"; progress = ((score-1500)/1000)*100; }
+  else { lvl = 5; title = "University Master 🎓"; progress = 100; }
+
+  currentStudent.level = lvl;
+  currentStudent.title = title;
+
+  // อัปเดตหน้า Dashboard
+  $("player-lvl").innerText = lvl;
+  $("player-title").innerText = title;
+  $("player-exp").innerText = `${score} EXP`;
+  $("exp-bar-fill").style.width = `${progress}%`;
+  
+  // อัปเดต Inventory
+  $("item-glasses-count").innerText = currentStudent.glasses;
+}
+
+/* ================== ระบบนำทาง และ กลับหน้าหลัก (ไม่โหลดใหม่) ================== */
 function switchNavTab(tab) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  document.querySelector(`.nav-item[onclick*="${tab}"]`)?.classList.add('active');
   ['dashboard', 'quests', 'inventory', 'ranking', 'game', 'end'].forEach(name => hide('screen-' + name));
   show('screen-' + tab);
 }
@@ -303,8 +343,22 @@ function switchInvTab(type) {
   if(type === 'rewards') { show('inv-rewards-view'); hide('inv-mats-view'); } else { hide('inv-rewards-view'); show('inv-mats-view'); }
 }
 function equipAvatar(newAvatar) {
-  $("main-avatar").innerHTML = `${newAvatar}<div class="avatar-lvl">5</div>`;
+  $("main-avatar").innerHTML = `${newAvatar}<div class="avatar-lvl" id="player-lvl">${currentStudent.level}</div>`;
   alert(`✨ สวมใส่ตัวละคร ${newAvatar} เรียบร้อยแล้ว!`);
+}
+
+// **ใหม่: ฟังก์ชันกลับหน้าแรกโดยไม่รีเฟรช**
+function returnToDashboard() {
+  // รีเซตป้าย Gacha
+  $("gacha-area").className = "gacha-card";
+  $("gacha-area").innerHTML = `<h3 style="margin: 0 0 10px 0; color:var(--warning);">🃏 โบนัสหลังจบเกม!</h3><p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom:15px;">ลุ้นรับ EXP เพิ่ม, ไอเทมแว่นตา, หรือโดนหักคะแนน...</p><button class="btn-quest" style="margin:0; padding:10px; background:linear-gradient(180deg, #f59e0b, #d97706);" onclick="playSound('click'); drawGacha()">👉 กดเพื่อเปิดไพ่เสี่ยงดวง</button>`;
+  $("gacha-area").style.display = "block";
+  $("btn-submit").style.display = "none";
+  $("submit-msg").className = "hidden";
+  
+  // อัปเดตข้อมูลผู้เล่นและสลับหน้า
+  updatePlayerStats();
+  switchNavTab('dashboard');
 }
 
 /* ================== ระบบล็อกอิน ================== */
@@ -314,43 +368,36 @@ async function handleLogin() {
   if(!stdId || !stdName) return alert("กรุณากรอกข้อมูลให้ครบถ้วน!");
   
   const btn = $("btn-login");
-  btn.disabled = true;
-  btn.innerText = "กำลังซิงค์ข้อมูลกับฐานข้อมูล...";
+  btn.disabled = true; btn.innerText = "กำลังซิงค์ข้อมูล...";
 
   try {
     if (SHEET_URL && SHEET_URL.trim() !== "") {
       const response = await fetch(`${SHEET_URL}?action=getStudent&id=${stdId}&name=${encodeURIComponent(stdName)}`);
-      currentStudent = await response.json();
+      const data = await response.json();
+      if (!data.error) {
+        // ให้ทุกคนเริ่มที่ Level 1 Novice เสมอในตอนเริ่มต้น แล้วคำนวณใหม่จากคะแนน
+        currentStudent = { 
+          id: data.id, name: data.name, cls: data.cls, 
+          score: data.score || 0, level: 1, title: "Novice Scholar 👶", 
+          glasses: 1, module1Passed: data.module1Passed 
+        };
+      } else throw new Error("ไม่พบชื่อ");
     } else {
       await new Promise(r => setTimeout(r, 1000));
-      currentStudent = { id: stdId, name: stdName, cls: "6/1", score: 0, title: "Novice Scholar 👶", module1Passed: false };
-    }
-
-    if (currentStudent.error) {
-      alert("❌ ไม่พบข้อมูลนักเรียน โปรดตรวจสอบรหัสและชื่อจริงกับคุณครู");
-      $("api-dot").style.background = "var(--danger)";
-      $("api-dot").style.boxShadow = "0 0 8px var(--danger)";
-      $("api-text").innerText = "การเชื่อมต่อล้มเหลว / ไม่พบชื่อ";
-      btn.disabled = false; btn.innerText = "เริ่มการเดินทาง ⚔️";
-      return;
+      currentStudent = { id: stdId, name: stdName, cls: "6/1", score: 0, level: 1, title: "Novice Scholar 👶", glasses: 1, module1Passed: false };
     }
 
     $("player-name-txt").innerText = `${currentStudent.name} (ม.${currentStudent.cls})`;
-    if (currentStudent.title) $("player-title").innerText = currentStudent.title;
+    updatePlayerStats(); // คำนวณ Level ใหม่ตามคะแนน
     
     if (currentStudent.module1Passed) {
-      $("status-module1").innerText = "PASSED";
-      $("status-module1").className = "quest-status qs-done";
-      $("btn-start-m1").innerText = "สอบผ่านแล้ว 🎉";
-      $("btn-start-m1").disabled = true;
+      $("status-module1").innerText = "PASSED"; $("status-module1").className = "quest-status qs-done";
+      $("btn-start-m1").innerText = "สอบผ่านแล้ว 🎉"; $("btn-start-m1").disabled = true;
     }
 
     hide('screen-login'); show('screen-dashboard'); show('bottom-bar');
   } catch (error) {
-    alert("การเชื่อมต่อฐานข้อมูลขัดข้อง: " + error.message);
-    $("api-dot").style.background = "var(--danger)";
-    $("api-dot").style.boxShadow = "0 0 8px var(--danger)";
-    $("api-text").innerText = "ระบบฐานข้อมูลออฟไลน์";
+    alert("❌ ข้อมูลไม่ถูกต้อง หรือระบบขัดข้อง: " + error.message);
     btn.disabled = false; btn.innerText = "เริ่มการเดินทาง ⚔️";
   }
 }
@@ -358,7 +405,7 @@ async function handleLogin() {
 /* ================== ระบบเกม & จับเวลา ================== */
 const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
 let gameState = { questions: [], currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
-let hasUsedGlasses = false;
+let hasUsedGlassesThisRun = false;
 let timerInterval;
 let timeLeft = 15;
 
@@ -369,9 +416,15 @@ const fallbackQuestions = [
 async function startModule1Game() {
   hide('screen-quests'); hide('bottom-bar'); show('screen-game');
   $("q-text").innerHTML = "กำลังดึงข้อสอบจากคลังเวทมนตร์...";
-  hasUsedGlasses = false;
-  $("btn-use-glasses").disabled = false;
-  $("btn-use-glasses").style.opacity = '1';
+  
+  hasUsedGlassesThisRun = false;
+  if(currentStudent.glasses > 0) {
+    $("btn-use-glasses").disabled = false; $("btn-use-glasses").style.opacity = '1';
+    $("btn-use-glasses").innerText = `👓 ใช้แว่นตาตัดชอยส์ผิด (มี ${currentStudent.glasses} อัน)`;
+  } else {
+    $("btn-use-glasses").disabled = true; $("btn-use-glasses").style.opacity = '0.5';
+    $("btn-use-glasses").innerText = `❌ แว่นตานักปราชญ์หมดแล้ว`;
+  }
 
   try {
     let loadedQuestions = fallbackQuestions;
@@ -396,11 +449,8 @@ async function startModule1Game() {
 }
 
 function startTimer() {
-  clearInterval(timerInterval);
-  timeLeft = 15;
-  $("timer-bar").style.transition = "none";
-  $("timer-bar").style.width = "100%";
-  $("timer-bar").style.background = "var(--success)";
+  clearInterval(timerInterval); timeLeft = 15;
+  $("timer-bar").style.transition = "none"; $("timer-bar").style.width = "100%"; $("timer-bar").style.background = "var(--success)";
   setTimeout(() => { $("timer-bar").style.transition = "width 1s linear"; }, 50);
 
   timerInterval = setInterval(() => {
@@ -409,10 +459,7 @@ function startTimer() {
     if (timeLeft <= 5) $("timer-bar").style.background = "var(--danger)";
     else if (timeLeft <= 10) $("timer-bar").style.background = "var(--warning)";
 
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      handleAnswer(null, null); // หมดเวลา
-    }
+    if (timeLeft <= 0) { clearInterval(timerInterval); handleAnswer(null, null); }
   }, 1000);
 }
 
@@ -424,9 +471,7 @@ function renderQuestion() {
   $("hud-score").innerText = gameState.score;
   $("hud-combo").innerText = `x${gameState.combo}`;
   
-  const optCont = $("opt-container");
-  optCont.innerHTML = "";
-  
+  const optCont = $("opt-container"); optCont.innerHTML = "";
   q.choices.forEach(choice => {
     let btn = document.createElement("button");
     btn.className = "opt-btn"; btn.innerText = choice;
@@ -443,16 +488,13 @@ function handleAnswer(selectedChoice, btnElement) {
   if(selectedChoice === q.a) {
     if(btnElement) btnElement.classList.add("correct");
     playSound('correct');
-    gameState.score += 100 * gameState.combo;
-    gameState.combo++;
-    gameState.correctCount++;
+    gameState.score += 100 * gameState.combo; gameState.combo++; gameState.correctCount++;
   } else {
     if(btnElement) btnElement.classList.add("wrong");
     playSound('wrong');
     document.getElementById("app").classList.add("shake-screen");
     setTimeout(() => document.getElementById("app").classList.remove("shake-screen"), 400);
-    gameState.hp--;
-    gameState.combo = 1;
+    gameState.hp--; gameState.combo = 1;
     document.querySelectorAll('.opt-btn').forEach(b => {
       if(b.innerText === q.a) b.classList.add("correct");
     });
@@ -467,15 +509,20 @@ function handleAnswer(selectedChoice, btnElement) {
 }
 
 function useGlasses() {
-  if (hasUsedGlasses) return alert("คุณใช้แว่นตานักปราชญ์ไปแล้ว!");
+  if (hasUsedGlassesThisRun) return alert("ด่านนี้คุณใช้แว่นตาไปแล้ว!");
+  if (currentStudent.glasses <= 0) return alert("แว่นตานักปราชญ์หมด!");
+  
   const buttons = document.querySelectorAll('.opt-btn');
   const currentQ = gameState.questions[gameState.currentIdx];
   for (let btn of buttons) {
     if (btn.innerText !== currentQ.a) {
       btn.style.opacity = '0.2'; btn.disabled = true;
-      hasUsedGlasses = true;
+      hasUsedGlassesThisRun = true;
+      currentStudent.glasses--; // หักไอเทม
       $("btn-use-glasses").disabled = true;
+      $("btn-use-glasses").innerText = `👓 ใช้แว่นตาไปแล้ว`;
       $("btn-use-glasses").style.opacity = '0.5';
+      $("item-glasses-count").innerText = currentStudent.glasses;
       playSound('click');
       break;
     }
@@ -485,6 +532,7 @@ function useGlasses() {
 function endGame() {
   hide('screen-game'); show('screen-end');
   clearInterval(timerInterval); 
+  
   $("end-score").innerText = gameState.score;
   $("end-correct").innerText = gameState.correctCount;
   $("end-total").innerText = gameState.questions.length;
@@ -498,11 +546,11 @@ function endGame() {
     statusEl.innerHTML = `<span style="background: rgba(16,185,129,0.2); color: var(--success); padding: 6px 16px; border-radius: 12px; font-weight: bold;">🎉 ผ่านเกณฑ์!</span>`;
   } else {
     playSound('wrong');
-    statusEl.innerHTML = `<span style="background: rgba(239,68,68,0.2); color: var(--danger); padding: 6px 16px; border-radius: 12px; font-weight: bold;">❌ ไม่ผ่านเกณฑ์ (ต้องได้ 10 ข้อขึ้นไป)</span>`;
+    statusEl.innerHTML = `<span style="background: rgba(239,68,68,0.2); color: var(--danger); padding: 6px 16px; border-radius: 12px; font-weight: bold;">❌ ไม่ผ่านเกณฑ์ (ได้น้อยกว่า 10 หรือ HP หมด)</span>`;
   }
   
   let rank = "F"; let rankColor = "#ef4444"; 
-  if (gameState.correctCount === gameState.questions.length) { rank = "S"; rankColor = "#fbbf24"; } 
+  if (gameState.correctCount === gameState.questions.length && gameState.hp > 0) { rank = "S"; rankColor = "#fbbf24"; } 
   else if (gameState.correctCount >= 12) { rank = "A"; rankColor = "#10b981"; } 
   else if (gameState.correctCount >= 10) { rank = "B"; rankColor = "#3b82f6"; } 
   else { rank = "C"; rankColor = "#ef4444"; }
@@ -512,25 +560,62 @@ function endGame() {
   rankEl.style.background = `linear-gradient(135deg, ${rankColor}, #000)`;
   rankEl.style.boxShadow = `0 0 30px ${rankColor}88`;
 
+  // รีเซตปุ่มส่งคะแนน
+  $("btn-submit").style.display = "none";
   if (currentStudent.module1Passed) {
-    $("btn-submit").disabled = true;
-    $("btn-submit").innerText = "สอบผ่านไปแล้ว ส่งคะแนนซ้ำไม่ได้ 🔒";
-    $("btn-submit").style.background = "#475569";
+    $("btn-submit").disabled = true; $("btn-submit").innerText = "สอบผ่านไปแล้ว ส่งคะแนนซ้ำไม่ได้ 🔒"; $("btn-submit").style.background = "#475569";
   } else if (!isPass) {
-    $("btn-submit").disabled = true;
-    $("btn-submit").innerText = "ต้องได้ 10 คะแนนขึ้นไปจึงจะบันทึกได้ 🔒";
-    $("btn-submit").style.background = "#475569";
+    $("btn-submit").disabled = true; $("btn-submit").innerText = "ต้องได้ 10 คะแนนขึ้นไปจึงจะบันทึกได้ 🔒"; $("btn-submit").style.background = "#475569";
   } else {
-    $("btn-submit").disabled = false;
-    $("btn-submit").innerText = "📤 ส่งผลคะแนนเข้าระบบ";
-    $("btn-submit").style.background = "linear-gradient(180deg, var(--primary), #7c3aed)";
+    $("btn-submit").disabled = false; $("btn-submit").innerText = "📤 ส่งผลคะแนนเข้าระบบ"; $("btn-submit").style.background = "linear-gradient(180deg, var(--primary), #7c3aed)";
   }
+}
+
+/* ================== ระบบ GACHA สุ่มรางวัล ================== */
+function drawGacha() {
+  playSound('gacha');
+  const gachaArea = $("gacha-area");
+  const rewards = [
+    { type: 'exp', val: 500, title: "โบนัส 500 EXP 🌟", desc: "รับค่าประสบการณ์เพิ่มฟรีๆ ไปเลย!", isGood: true },
+    { type: 'item', val: "glasses", title: "ได้รับ 👓 แว่นตานักปราชญ์", desc: "นำไปใช้ตัดชอยส์ในห้องสอบรอบถัดไป", isGood: true },
+    { type: 'exp', val: -200, title: "โดนโจมตี! เสีย 200 EXP 🌪️", desc: "โชคร้ายเจอพายุเวทมนตร์", isGood: false },
+    { type: 'multiply', val: 2, title: "แจ็คพอต! คะแนนคูณ 2 🔥", desc: "คะแนนด่านนี้ทั้งหมดคูณสอง", isGood: true },
+    { type: 'avatar', val: "👽", title: "ปลดล็อกตัวละคร: เอเลี่ยน 👽", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true }
+  ];
+  
+  const r = rewards[Math.floor(Math.random() * rewards.length)];
+  
+  gachaArea.className = `gacha-card ${r.isGood ? 'revealed' : 'revealed-bad'}`;
+  gachaArea.innerHTML = `
+    <h3 style="margin: 0 0 5px 0;">${r.title}</h3>
+    <p style="font-size: 0.8rem; margin-bottom: 0;">${r.desc}</p>
+  `;
+
+  // Apply Rewards
+  if (r.type === 'exp') {
+    currentStudent.score += r.val;
+    if (currentStudent.score < 0) currentStudent.score = 0;
+  } else if (r.type === 'multiply') {
+    gameState.score *= r.val;
+    $("end-score").innerText = gameState.score;
+  } else if (r.type === 'item' && r.val === "glasses") {
+    currentStudent.glasses++;
+  } else if (r.type === 'avatar') {
+    alert("ยินดีด้วย! คุณได้รับตัวละครใหม่: " + r.val);
+  }
+
+  // โชว์ปุ่มส่งคะแนนหลังสุ่ม Gacha เสร็จ
+  $("btn-submit").style.display = "block";
 }
 
 /* ================== ระบบส่งคะแนน และจัดอันดับ ================== */
 async function submitScore() {
   $("btn-submit").disabled = true;
   $("btn-submit").innerText = "กำลังอัปโหลด...";
+  
+  // บวกรวมคะแนนเกมเข้ากับคะแนนนักเรียน
+  currentStudent.score += gameState.score;
+  updatePlayerStats(); // อัปเดตยศและ Level ทันที
   
   if (!SHEET_URL || SHEET_URL.trim() === "") {
     setTimeout(() => {
