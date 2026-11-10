@@ -45,7 +45,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 .tab-btn { flex: 1; padding: 8px; background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; border-radius: 10px; transition: 0.25s; font-size: 0.9rem; }
 .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px var(--primary-glow); }
 
-.quest-card { background: rgba(255,255,255,0.02); border: 1.5px solid var(--border); border-radius: 20px; padding: 18px; margin-bottom: 14px; }
+.quest-card { background: rgba(255,255,255,0.02); border: 1.5px solid var(--border); border-radius: 20px; padding: 18px; margin-bottom: 14px; transition: transform 0.2s; }
 .quest-status { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; padding: 4px 10px; border-radius: 8px; }
 .qs-pending { background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid var(--warning); }
 .qs-done { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid var(--success); }
@@ -74,6 +74,13 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 .nav-item i { font-size: 1.5rem; font-style: normal; }
 
 .hidden { display: none !important; }
+
+/* Study Resource Styles */
+.resource-section { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 3px solid var(--primary); }
+.resource-section h3 { color: var(--warning); margin: 0 0 10px 0; font-size: 1rem; }
+.resource-list { padding-left: 20px; margin: 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.6; }
+.resource-list li { margin-bottom: 6px; }
+.resource-list b { color: #f8fafc; }
 </style>
 </head>
 <body>
@@ -148,7 +155,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
     </div>
   </div>
 
-  <!-- ================= INVENTORY ================= -->
+  <!-- ================= INVENTORY & RESOURCES ================= -->
   <div id="screen-inventory" class="hidden" style="margin-top: 40px;">
     <div class="tab-container">
       <button class="tab-btn active" onclick="playSound('click'); switchInvTab('rewards')">🎁 คลังรางวัล</button>
@@ -160,18 +167,84 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
         <h4 style="margin:0 0 4px 0; font-size:0.95rem;">แว่นตานักปราชญ์</h4>
         <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">มี <span id="item-glasses-count" style="color:var(--success); font-weight:bold;">1</span> ชิ้น (ใช้ในห้องสอบ)</p>
       </div>
-      <div class="item-card">
-        <div class="item-icon">🧝‍♀️</div>
-        <h4 style="margin:0 0 4px 0; font-size:0.95rem;">นักรบเอลฟ์</h4>
-        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">สกินตัวละครพิเศษ</p>
-        <button class="btn-quest" style="padding:5px 10px; font-size:0.75rem; margin:0;" onclick="playSound('click'); equipAvatar('🧝‍♀️')">สวมใส่</button>
-      </div>
     </div>
     <div id="inv-mats-view" class="hidden">
-      <div class="quest-card">
-        <h3 style="margin:0 0 4px 0; font-size:0.95rem;">📓 Workbook: Module 1</h3>
-        <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">เอกสารประกอบการเรียน</p>
+      <div class="quest-card" style="cursor: pointer; border-color: var(--secondary);" onclick="playSound('click'); openResource('mod1')">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3 style="margin:0 0 4px 0; font-size:0.95rem; color:var(--secondary);">📘 สรุปเนื้อหา Module 1: University Gateway</h3>
+            <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">คำศัพท์, Collocations และความรู้ทั้งหมด</p>
+          </div>
+          <span style="font-size:1.5rem;">👉</span>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ================= STUDY RESOURCE VIEWER (เนื้อหาบทเรียน) ================= -->
+  <div id="screen-resource-viewer" class="hidden panel" style="margin-top: 40px;">
+    <button class="btn-quest" style="background:#475569; padding:10px; margin-bottom:15px;" onclick="playSound('click'); closeResource()">🔙 กลับคลังทรัพยากร</button>
+    
+    <h2 style="color:var(--primary); text-align:center; margin-top:10px;">Module 1: University Gateway</h2>
+    
+    <div class="resource-section">
+      <h3>📚 1. Core Vocabulary (คำศัพท์หลัก)</h3>
+      <ul class="resource-list">
+        <li><b>university</b> (n.) มหาวิทยาลัย</li>
+        <li><b>faculty</b> (n.) คณะ</li>
+        <li><b>major</b> (n.) วิชาเอก</li>
+        <li><b>lecture</b> (n.) การบรรยาย</li>
+        <li><b>lecturer</b> (n.) อาจารย์ผู้สอน</li>
+        <li><b>professor</b> (n.) ศาสตราจารย์</li>
+        <li><b>tutor</b> (n.) ติวเตอร์ / ผู้สอนพิเศษ</li>
+        <li><b>assignment</b> (n.) งานที่ได้รับมอบหมาย</li>
+        <li><b>deadline</b> (n.) กำหนดส่งงาน</li>
+        <li><b>tuition fee</b> (n.) ค่าเล่าเรียน</li>
+        <li><b>scholarship</b> (n.) ทุนการศึกษา</li>
+        <li><b>degree</b> (n.) ปริญญา</li>
+        <li><b>dormitory</b> (n.) หอพักนักศึกษา</li>
+        <li><b>campus</b> (n.) วิทยาเขต</li>
+        <li><b>undergraduate</b> (n.) นักศึกษาปริญญาตรี</li>
+        <li><b>admission</b> (n.) การรับเข้าศึกษา</li>
+        <li><b>requirement</b> (n.) คุณสมบัติที่กำหนด</li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h3>🔗 2. Collocations (คำที่ใช้คู่กัน)</h3>
+      <ul class="resource-list">
+        <li><b>submit</b> an assignment (ส่งงาน)</li>
+        <li><b>meet</b> the deadline (ส่งงานทันกำหนด)</li>
+        <li><b>take</b> a course (เรียนรายวิชา)</li>
+        <li><b>pass</b> an exam (สอบผ่าน)</li>
+        <li><b>apply for</b> a scholarship (สมัครทุนการศึกษา)</li>
+        <li><b>pay</b> the tuition fee (จ่ายค่าเทอม)</li>
+        <li><b>attend</b> a lecture (เข้าฟังบรรยาย)</li>
+        <li><b>register for</b> a course (ลงทะเบียนรายวิชา)</li>
+        <li><b>graduate from</b> university (สำเร็จการศึกษาจากมหา'ลัย)</li>
+        <li><b>get</b> a degree (ได้รับปริญญา)</li>
+        <li><b>join</b> a club (เข้าร่วมชมรม)</li>
+        <li><b>live on</b> campus (อาศัยอยู่ในมหาวิทยาลัย)</li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h3>🧩 3. Word Families (รากศัพท์เดียวกัน)</h3>
+      <ul class="resource-list">
+        <li><b>apply</b> (v.) -> <b>application</b> (n. ใบสมัคร) -> <b>applicant</b> (n. ผู้สมัคร)</li>
+        <li><b>admit</b> (v.) -> <b>admission</b> (n. การรับเข้า)</li>
+        <li><b>require</b> (v.) -> <b>requirement</b> (n. คุณสมบัติ)</li>
+        <li><b>register</b> (v.) -> <b>registration</b> (n. การลงทะเบียน)</li>
+        <li><b>graduate</b> (v.) -> <b>graduation</b> (n. การสำเร็จการศึกษา)</li>
+      </ul>
+    </div>
+
+    <div class="resource-section">
+      <h3>⚠️ 4. Easy to Mix Up (คำที่มักสับสน)</h3>
+      <ul class="resource-list">
+        <li><b>lecture</b> (การบรรยาย) VS <b>lecturer</b> (อาจารย์ผู้สอน)</li>
+        <li><b>faculty</b> (คณะ) VS <b>major</b> (วิชาเอก)</li>
+      </ul>
     </div>
   </div>
 
@@ -189,7 +262,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
       </div>
       <div style="background:var(--primary); padding:2px 12px; border-radius:10px; font-size:0.8rem; display:inline-block; font-weight:bold; margin-bottom:12px;" id="q-counter">Q 1/15</div>
       
-      <!-- กล่องบทอ่าน (จะซ่อนไว้ถ้าข้อนั้นไม่มีบทอ่าน) -->
+      <!-- กล่องบทอ่าน -->
       <div id="q-context" style="font-size:0.85rem; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; color:#cbd5e1; line-height:1.4; max-height:120px; overflow-y:auto; margin-bottom:12px; border-left: 3px solid var(--secondary); text-align:left;" class="hidden"></div>
       
       <div class="q-text" id="q-text" style="font-size:1.15rem; font-weight:600; line-height:1.5;">Question?</div>
@@ -310,7 +383,6 @@ function updatePlayerStats() {
   $("player-exp").innerText = `${score} EXP`; $("exp-bar-fill").style.width = `${progress}%`;
   $("item-glasses-count").innerText = currentStudent.glasses;
   
-  // อัปเดตสถานะปุ่มสอบ
   if (currentStudent.module1Passed) {
     $("status-module1").innerText = "PASSED"; $("status-module1").className = "quest-status qs-done";
     $("btn-start-m1").innerText = "สอบผ่านแล้ว 🎉"; $("btn-start-m1").disabled = true; $("btn-start-m1").style.background = "#475569";
@@ -320,16 +392,16 @@ function updatePlayerStats() {
   }
 }
 
-/* ================== ระบบนำทาง (ป้องกันบั๊กกดไม่ได้) ================== */
+/* ================== ระบบนำทาง และ หน้าข้อมูล (แก้ไขใหม่) ================== */
 function switchNavTab(tab) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   const targetNav = document.querySelector(`.nav-item[onclick*="switchNavTab('${tab}')"]`);
   if(targetNav) targetNav.classList.add('active');
   
-  ['dashboard', 'quests', 'inventory', 'ranking', 'game', 'end'].forEach(name => hide('screen-' + name));
+  ['dashboard', 'quests', 'inventory', 'ranking', 'game', 'end', 'resource-viewer'].forEach(name => hide('screen-' + name));
   show('screen-' + tab);
   
-  if(tab === 'game' || tab === 'login' || tab === 'end') hide('bottom-bar');
+  if(tab === 'game' || tab === 'login' || tab === 'end' || tab === 'resource-viewer') hide('bottom-bar');
   else show('bottom-bar');
 }
 
@@ -338,16 +410,25 @@ function switchQuestTab(type) {
   event.currentTarget.classList.add('active');
   if(type === 'main') { show('tab-main-quests'); hide('tab-side-quests'); } else { hide('tab-main-quests'); show('tab-side-quests'); }
 }
-
 function switchInvTab(type) {
   document.querySelectorAll('#screen-inventory .tab-btn').forEach(btn => btn.classList.remove('active'));
   event.currentTarget.classList.add('active');
   if(type === 'rewards') { show('inv-rewards-view'); hide('inv-mats-view'); } else { hide('inv-rewards-view'); show('inv-mats-view'); }
 }
-
 function equipAvatar(newAvatar) {
   $("main-avatar").innerHTML = `${newAvatar}<div class="avatar-lvl" id="player-lvl">${currentStudent.level}</div>`;
   alert(`✨ สวมใส่ตัวละคร ${newAvatar} เรียบร้อยแล้ว!`);
+}
+function openResource(mod) {
+  hide('screen-inventory');
+  hide('bottom-bar');
+  show('screen-resource-viewer');
+  window.scrollTo(0, 0);
+}
+function closeResource() {
+  hide('screen-resource-viewer');
+  show('screen-inventory');
+  show('bottom-bar');
 }
 
 function returnToDashboard() {
@@ -361,7 +442,7 @@ function returnToDashboard() {
   $("submit-msg").classList.add("hidden");
   
   updatePlayerStats();
-  switchNavTab('dashboard');
+  switchNavTab('dashboard'); // สลับกลับหน้าข้อมูล (Dashboard)
 }
 
 /* ================== ระบบล็อกอิน ================== */
@@ -382,7 +463,6 @@ async function handleLogin() {
       } else throw new Error("ไม่พบชื่อในระบบ Google Sheets");
     } else {
       await new Promise(r => setTimeout(r, 1000));
-      // ใช้ LocalStorage ช่วยจำลองการสอบผ่านในเครื่อง
       let localPassed = localStorage.getItem(`passed_m1_${stdId}`) === 'true';
       currentStudent = { id: stdId, name: stdName, cls: "6/1", score: 0, level: 1, title: "Novice Scholar 👶", glasses: 1, module1Passed: localPassed };
     }
@@ -402,13 +482,8 @@ const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
 let gameState = { questions: [], currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
 let hasUsedGlassesThisRun = false; let timerInterval; let timeLeft = 15;
 
-const readingContextMai = "<b>Reading Passage:</b><br>Mai is an undergraduate at a university in Chiang Mai. She lives in a dormitory on campus, so she can walk to class. This semester she is taking five courses, and her timetable is full. She has a lecture every morning and a seminar on Friday. Her professor gives a lot of homework, and every assignment has a deadline. Mai often studies in the library, and sometimes she asks her tutor for help. She also joined the music club. Mai has a scholarship, so she does not pay the tuition fee. At the end of the semester there is an exam, and she hopes to get a good grade. In four years she will graduate with a bachelor’s degree.";
-
 const fallbackQuestions = [
-  { "q": "คำว่า <b>dormitory</b> แปลว่าอะไร?", "a": "หอพักนักศึกษา", "choices": ["หอพักนักศึกษา", "ห้องสมุด", "วิทยาเขต", "คณะ"] },
-  { "q": "เติมคำที่คู่กัน: _____ the deadline", "a": "meet", "choices": ["submit", "meet", "take", "pay"] },
-  { "q": "Mai pays the tuition fee herself. (True / False)", "a": "False", "choices": ["True", "False"], "ctx": readingContextMai },
-  { "q": "Where does Mai often study?", "a": "In the library", "choices": ["In the dormitory", "In the library", "In the seminar room", "At the music club"], "ctx": readingContextMai }
+  { "q": "คำว่า <b>dormitory</b> แปลว่าอะไร?", "a": "หอพักนักศึกษา", "choices": ["หอพักนักศึกษา", "ห้องสมุด", "วิทยาเขต", "คณะ"] }
 ];
 
 async function startModule1Game() {
@@ -428,9 +503,7 @@ async function startModule1Game() {
     let loadedQuestions = fallbackQuestions;
     if (JSON_URL && JSON_URL.trim() !== "") {
       const response = await fetch(JSON_URL);
-      const data = await response.json();
-      // หากข้อสอบบน GitHub ยังไม่ได้ใส่ ctx ให้ ระบบจะใช้ fallbackQuestions ที่มีบทอ่านไปก่อน
-      loadedQuestions = data; 
+      loadedQuestions = await response.json();
     }
     
     const shuffledBank = shuffleArray([...loadedQuestions]);
@@ -442,7 +515,7 @@ async function startModule1Game() {
     gameState = { questions: finalQuestions, currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
     renderQuestion();
   } catch (error) {
-    console.warn("โหลด JSON ไม่สำเร็จ ใช้ข้อสอบสำรอง");
+    alert("โหลดข้อสอบล้มเหลว โปรดตรวจสอบลิงก์ JSON");
     gameState = { questions: fallbackQuestions, currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
     renderQuestion();
   }
@@ -577,19 +650,16 @@ function endGame() {
 }
 
 /* ================== ระบบ GACHA สุ่มรางวัล ================== */
-/* ================== ระบบ GACHA สุ่มรางวัล ================== */
 function drawGacha() {
   playSound('gacha');
   const gachaArea = $("gacha-area");
-  
-  // คลังของรางวัลสุ่ม (เพิ่มตัวละครใหม่เข้าไปได้ที่นี่)
   const rewards = [
     { type: 'exp', val: 500, title: "โบนัส 500 EXP 🌟", desc: "รับค่าประสบการณ์เพิ่มฟรีๆ ไปเลย!", isGood: true },
-    { type: 'item', val: "glasses", title: "ได้รับ 👓 แว่นตานักปราชญ์", desc: "มีแว่นตาไปใช้ในห้องสอบเพิ่ม 1 อัน", isGood: true },
+    { type: 'item', val: "glasses", title: "ได้รับ 👓 แว่นตานักปราชญ์", desc: "นำไปใช้ตัดชอยส์ในห้องสอบรอบถัดไป", isGood: true },
     { type: 'exp', val: -200, title: "โดนโจมตี! เสีย 200 EXP 🌪️", desc: "โชคร้ายเจอพายุเวทมนตร์", isGood: false },
     { type: 'multiply', val: 2, title: "แจ็คพอต! คะแนนคูณ 2 🔥", desc: "คะแนนด่านนี้ทั้งหมดคูณสอง", isGood: true },
-    { type: 'avatar', val: "👽", title: "ปลดล็อก: เอเลี่ยน 👽", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true },
-    { type: 'avatar', val: "👻", title: "ปลดล็อก: วิญญาณ 👻", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true }
+    { type: 'avatar', val: "👽", title: "ปลดล็อกตัวละคร: เอเลี่ยน 👽", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true },
+    { type: 'avatar', val: "👻", title: "ปลดล็อกตัวละคร: วิญญาณ 👻", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true }
   ];
   
   const r = rewards[Math.floor(Math.random() * rewards.length)];
@@ -597,19 +667,15 @@ function drawGacha() {
   gachaArea.className = `gacha-card ${r.isGood ? 'revealed' : 'revealed-bad'}`;
   gachaArea.innerHTML = `<h3 style="margin: 0 0 5px 0;">${r.title}</h3><p style="font-size: 0.8rem; margin-bottom: 0;">${r.desc}</p>`;
 
-  // ประมวลผลไอเทมเข้าคลังแบบเรียลไทม์
   if (r.type === 'exp') {
     currentStudent.score += r.val; 
     if (currentStudent.score < 0) currentStudent.score = 0;
-    updatePlayerStats(); // อัปเดตหลอด EXP ทันที
   } else if (r.type === 'multiply') {
-    gameState.score *= r.val; 
-    $("end-score").innerText = gameState.score;
+    gameState.score *= r.val; $("end-score").innerText = gameState.score;
   } else if (r.type === 'item' && r.val === "glasses") {
     currentStudent.glasses++;
-    $("item-glasses-count").innerText = currentStudent.glasses; // อัปเดตตัวเลขแว่นตาทันที
+    $("item-glasses-count").innerText = currentStudent.glasses;
   } else if (r.type === 'avatar') {
-    // สร้างการ์ดตัวละครใหม่ แทรกเข้าไปในหน้าคลังไอเทมทันที
     $("inv-rewards-view").innerHTML += `
       <div class="item-card">
         <div class="item-icon">${r.val}</div>
@@ -634,7 +700,7 @@ async function submitScore() {
       $("submit-msg").innerText = "✅ (โหมดจำลอง) บันทึกคะแนนลงระบบเรียบร้อยแล้ว!";
       show('submit-msg');
       currentStudent.module1Passed = true; 
-      localStorage.setItem(`passed_m1_${currentStudent.id}`, 'true'); // บันทึกลงเครื่อง
+      localStorage.setItem(`passed_m1_${currentStudent.id}`, 'true'); 
     }, 1000);
     return;
   }
