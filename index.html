@@ -577,15 +577,19 @@ function endGame() {
 }
 
 /* ================== ระบบ GACHA สุ่มรางวัล ================== */
+/* ================== ระบบ GACHA สุ่มรางวัล ================== */
 function drawGacha() {
   playSound('gacha');
   const gachaArea = $("gacha-area");
+  
+  // คลังของรางวัลสุ่ม (เพิ่มตัวละครใหม่เข้าไปได้ที่นี่)
   const rewards = [
     { type: 'exp', val: 500, title: "โบนัส 500 EXP 🌟", desc: "รับค่าประสบการณ์เพิ่มฟรีๆ ไปเลย!", isGood: true },
-    { type: 'item', val: "glasses", title: "ได้รับ 👓 แว่นตานักปราชญ์", desc: "นำไปใช้ตัดชอยส์ในห้องสอบรอบถัดไป", isGood: true },
+    { type: 'item', val: "glasses", title: "ได้รับ 👓 แว่นตานักปราชญ์", desc: "มีแว่นตาไปใช้ในห้องสอบเพิ่ม 1 อัน", isGood: true },
     { type: 'exp', val: -200, title: "โดนโจมตี! เสีย 200 EXP 🌪️", desc: "โชคร้ายเจอพายุเวทมนตร์", isGood: false },
     { type: 'multiply', val: 2, title: "แจ็คพอต! คะแนนคูณ 2 🔥", desc: "คะแนนด่านนี้ทั้งหมดคูณสอง", isGood: true },
-    { type: 'avatar', val: "👽", title: "ปลดล็อกตัวละคร: เอเลี่ยน 👽", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true }
+    { type: 'avatar', val: "👽", title: "ปลดล็อก: เอเลี่ยน 👽", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true },
+    { type: 'avatar', val: "👻", title: "ปลดล็อก: วิญญาณ 👻", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true }
   ];
   
   const r = rewards[Math.floor(Math.random() * rewards.length)];
@@ -593,14 +597,27 @@ function drawGacha() {
   gachaArea.className = `gacha-card ${r.isGood ? 'revealed' : 'revealed-bad'}`;
   gachaArea.innerHTML = `<h3 style="margin: 0 0 5px 0;">${r.title}</h3><p style="font-size: 0.8rem; margin-bottom: 0;">${r.desc}</p>`;
 
+  // ประมวลผลไอเทมเข้าคลังแบบเรียลไทม์
   if (r.type === 'exp') {
-    currentStudent.score += r.val; if (currentStudent.score < 0) currentStudent.score = 0;
+    currentStudent.score += r.val; 
+    if (currentStudent.score < 0) currentStudent.score = 0;
+    updatePlayerStats(); // อัปเดตหลอด EXP ทันที
   } else if (r.type === 'multiply') {
-    gameState.score *= r.val; $("end-score").innerText = gameState.score;
+    gameState.score *= r.val; 
+    $("end-score").innerText = gameState.score;
   } else if (r.type === 'item' && r.val === "glasses") {
     currentStudent.glasses++;
+    $("item-glasses-count").innerText = currentStudent.glasses; // อัปเดตตัวเลขแว่นตาทันที
   } else if (r.type === 'avatar') {
-    alert("ยินดีด้วย! คุณได้รับตัวละครใหม่: " + r.val);
+    // สร้างการ์ดตัวละครใหม่ แทรกเข้าไปในหน้าคลังไอเทมทันที
+    $("inv-rewards-view").innerHTML += `
+      <div class="item-card">
+        <div class="item-icon">${r.val}</div>
+        <h4 style="margin:0 0 4px 0; font-size:0.95rem;">สกิน: ${r.val}</h4>
+        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">ตัวละครลับจากกาชา</p>
+        <button class="btn-quest" style="padding:5px 10px; font-size:0.75rem; margin:0;" onclick="playSound('click'); equipAvatar('${r.val}')">สวมใส่</button>
+      </div>
+    `;
   }
 
   $("btn-submit").style.display = "block";
