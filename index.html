@@ -45,11 +45,11 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 .tab-btn { flex: 1; padding: 8px; background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; border-radius: 10px; transition: 0.25s; font-size: 0.9rem; }
 .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px var(--primary-glow); }
 
-.quest-card { background: rgba(255,255,255,0.02); border: 1.5px solid var(--border); border-radius: 20px; padding: 18px; margin-bottom: 14px; transition: transform 0.2s; }
+.quest-card { background: rgba(255,255,255,0.02); border: 1.5px solid var(--border); border-radius: 20px; padding: 18px; margin-bottom: 14px; }
 .quest-status { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; padding: 4px 10px; border-radius: 8px; }
 .qs-pending { background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid var(--warning); }
 .qs-done { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid var(--success); }
-.qs-locked { background: rgba(100,116,139,0.15); color: var(--text-muted); border: 1px solid var(--text-muted); }
+
 .item-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
 .item-card { background: rgba(255,255,255,0.02); border: 1.5px solid var(--border); border-radius: 20px; padding: 16px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
 .item-icon { font-size: 2.2rem; margin-bottom: 8px; }
@@ -74,13 +74,6 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 .nav-item i { font-size: 1.5rem; font-style: normal; }
 
 .hidden { display: none !important; }
-
-/* Study Resource Styles */
-.resource-section { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 3px solid var(--primary); }
-.resource-section h3 { color: var(--warning); margin: 0 0 10px 0; font-size: 1rem; }
-.resource-list { padding-left: 20px; margin: 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.6; }
-.resource-list li { margin-bottom: 6px; }
-.resource-list b { color: #f8fafc; }
 </style>
 </head>
 <body>
@@ -123,11 +116,11 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
     </div>
     <div class="panel" style="border-color: rgba(245, 158, 11, 0.3); background: linear-gradient(135deg, rgba(245,158,11,0.05), transparent);">
       <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-        <span style="color:var(--warning); font-weight:600; font-size:0.95rem;">⚠️ ข่าวสารภารกิจด่วน</span>
+        <span style="color:var(--warning); font-weight:600; font-size:0.95rem;">⚠️ ประกาศภารกิจ</span>
         <span class="quest-status qs-pending" style="font-size:0.6rem;">EXAM</span>
       </div>
-      <h3 style="margin:0 0 6px 0; font-size:1.1rem;">Module 1: University Gateway</h3>
-      <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">บุกมหาวิทยาลัยและฝ่าด่านคำศัพท์! มีกำหนดส่งภายในสัปดาห์นี้</p>
+      <h3 style="margin:0 0 6px 0; font-size:1.1rem;">ด่านทดสอบใหม่เปิดแล้ว!</h3>
+      <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">ไปที่กระดานภารกิจเพื่อลุย Module 2 ได้เลย</p>
     </div>
   </div>
 
@@ -137,16 +130,28 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
       <button class="tab-btn active" onclick="playSound('click'); switchQuestTab('main')">MAIN (หลัก)</button>
       <button class="tab-btn" onclick="playSound('click'); switchQuestTab('side')">SIDE (เสริม)</button>
     </div>
+    
     <div id="tab-main-quests">
+      <!-- ภารกิจ Module 1 -->
       <div class="quest-card">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-          <span class="quest-status qs-pending" id="status-module1">PENDING</span>
+          <span class="quest-status qs-pending" id="status-m1">PENDING</span>
         </div>
         <h3 style="margin:0 0 6px 0;">⚔️ Module 1: University Gateway</h3>
-        <p style="margin:0 0 15px 0; font-size:0.8rem; color:var(--text-muted);">ทดสอบความเข้าใจ 15 ข้อ (มีจับเวลา 15 วินาที/ข้อ)</p>
-        <button class="btn-quest" id="btn-start-m1" style="padding:10px 14px; font-size:0.95rem;" onclick="playSound('click'); startModule1Game()">บุกเข้าทำด่านทดสอบ 🎮</button>
+        <p style="margin:0 0 15px 0; font-size:0.8rem; color:var(--text-muted);">ทดสอบความเข้าใจ 15 ข้อ (มีจับเวลา)</p>
+        <button class="btn-quest" id="btn-start-m1" style="padding:10px 14px; font-size:0.95rem;" onclick="playSound('click'); startGame('M1')">บุกเข้าทำด่านทดสอบ 🎮</button>
+      </div>
+      <!-- ภารกิจ Module 2 -->
+      <div class="quest-card" style="border-color: rgba(59, 130, 246, 0.5);">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+          <span class="quest-status qs-pending" id="status-m2">PENDING</span>
+        </div>
+        <h3 style="margin:0 0 6px 0;">🛡️ Module 2: Skimming & Scanning</h3>
+        <p style="margin:0 0 15px 0; font-size:0.8rem; color:var(--text-muted);">ทดสอบทักษะการอ่านเร็ว 15 ข้อ (มีจับเวลา)</p>
+        <button class="btn-quest" id="btn-start-m2" style="padding:10px 14px; font-size:0.95rem; background: linear-gradient(180deg, var(--secondary), #2563eb);" onclick="playSound('click'); startGame('M2')">บุกเข้าทำด่านทดสอบ 🎮</button>
       </div>
     </div>
+    
     <div id="tab-side-quests" class="hidden">
       <div class="quest-card">
         <h3 style="margin:0 0 6px 0;">📜 สมุดจดศัพท์ (Vocabulary Log)</h3>
@@ -155,7 +160,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
     </div>
   </div>
 
-  <!-- ================= INVENTORY & RESOURCES ================= -->
+  <!-- ================= INVENTORY ================= -->
   <div id="screen-inventory" class="hidden" style="margin-top: 40px;">
     <div class="tab-container">
       <button class="tab-btn active" onclick="playSound('click'); switchInvTab('rewards')">🎁 คลังรางวัล</button>
@@ -167,84 +172,22 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
         <h4 style="margin:0 0 4px 0; font-size:0.95rem;">แว่นตานักปราชญ์</h4>
         <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">มี <span id="item-glasses-count" style="color:var(--success); font-weight:bold;">1</span> ชิ้น (ใช้ในห้องสอบ)</p>
       </div>
-    </div>
-    <div id="inv-mats-view" class="hidden">
-      <div class="quest-card" style="cursor: pointer; border-color: var(--secondary);" onclick="playSound('click'); openResource('mod1')">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <h3 style="margin:0 0 4px 0; font-size:0.95rem; color:var(--secondary);">📘 สรุปเนื้อหา Module 1: University Gateway</h3>
-            <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">คำศัพท์, Collocations และความรู้ทั้งหมด</p>
-          </div>
-          <span style="font-size:1.5rem;">👉</span>
-        </div>
+      <div class="item-card">
+        <div class="item-icon">🧝‍♀️</div>
+        <h4 style="margin:0 0 4px 0; font-size:0.95rem;">นักรบเอลฟ์</h4>
+        <p style="margin:0 0 10px 0; font-size:0.75rem; color:var(--text-muted);">สกินตัวละครพิเศษ</p>
+        <button class="btn-quest" style="padding:5px 10px; font-size:0.75rem; margin:0;" onclick="playSound('click'); equipAvatar('🧝‍♀️')">สวมใส่</button>
       </div>
     </div>
-  </div>
-
-  <!-- ================= STUDY RESOURCE VIEWER (เนื้อหาบทเรียน) ================= -->
-  <div id="screen-resource-viewer" class="hidden panel" style="margin-top: 40px;">
-    <button class="btn-quest" style="background:#475569; padding:10px; margin-bottom:15px;" onclick="playSound('click'); closeResource()">🔙 กลับคลังทรัพยากร</button>
-    
-    <h2 style="color:var(--primary); text-align:center; margin-top:10px;">Module 1: University Gateway</h2>
-    
-    <div class="resource-section">
-      <h3>📚 1. Core Vocabulary (คำศัพท์หลัก)</h3>
-      <ul class="resource-list">
-        <li><b>university</b> (n.) มหาวิทยาลัย</li>
-        <li><b>faculty</b> (n.) คณะ</li>
-        <li><b>major</b> (n.) วิชาเอก</li>
-        <li><b>lecture</b> (n.) การบรรยาย</li>
-        <li><b>lecturer</b> (n.) อาจารย์ผู้สอน</li>
-        <li><b>professor</b> (n.) ศาสตราจารย์</li>
-        <li><b>tutor</b> (n.) ติวเตอร์ / ผู้สอนพิเศษ</li>
-        <li><b>assignment</b> (n.) งานที่ได้รับมอบหมาย</li>
-        <li><b>deadline</b> (n.) กำหนดส่งงาน</li>
-        <li><b>tuition fee</b> (n.) ค่าเล่าเรียน</li>
-        <li><b>scholarship</b> (n.) ทุนการศึกษา</li>
-        <li><b>degree</b> (n.) ปริญญา</li>
-        <li><b>dormitory</b> (n.) หอพักนักศึกษา</li>
-        <li><b>campus</b> (n.) วิทยาเขต</li>
-        <li><b>undergraduate</b> (n.) นักศึกษาปริญญาตรี</li>
-        <li><b>admission</b> (n.) การรับเข้าศึกษา</li>
-        <li><b>requirement</b> (n.) คุณสมบัติที่กำหนด</li>
-      </ul>
-    </div>
-
-    <div class="resource-section">
-      <h3>🔗 2. Collocations (คำที่ใช้คู่กัน)</h3>
-      <ul class="resource-list">
-        <li><b>submit</b> an assignment (ส่งงาน)</li>
-        <li><b>meet</b> the deadline (ส่งงานทันกำหนด)</li>
-        <li><b>take</b> a course (เรียนรายวิชา)</li>
-        <li><b>pass</b> an exam (สอบผ่าน)</li>
-        <li><b>apply for</b> a scholarship (สมัครทุนการศึกษา)</li>
-        <li><b>pay</b> the tuition fee (จ่ายค่าเทอม)</li>
-        <li><b>attend</b> a lecture (เข้าฟังบรรยาย)</li>
-        <li><b>register for</b> a course (ลงทะเบียนรายวิชา)</li>
-        <li><b>graduate from</b> university (สำเร็จการศึกษาจากมหา'ลัย)</li>
-        <li><b>get</b> a degree (ได้รับปริญญา)</li>
-        <li><b>join</b> a club (เข้าร่วมชมรม)</li>
-        <li><b>live on</b> campus (อาศัยอยู่ในมหาวิทยาลัย)</li>
-      </ul>
-    </div>
-
-    <div class="resource-section">
-      <h3>🧩 3. Word Families (รากศัพท์เดียวกัน)</h3>
-      <ul class="resource-list">
-        <li><b>apply</b> (v.) -> <b>application</b> (n. ใบสมัคร) -> <b>applicant</b> (n. ผู้สมัคร)</li>
-        <li><b>admit</b> (v.) -> <b>admission</b> (n. การรับเข้า)</li>
-        <li><b>require</b> (v.) -> <b>requirement</b> (n. คุณสมบัติ)</li>
-        <li><b>register</b> (v.) -> <b>registration</b> (n. การลงทะเบียน)</li>
-        <li><b>graduate</b> (v.) -> <b>graduation</b> (n. การสำเร็จการศึกษา)</li>
-      </ul>
-    </div>
-
-    <div class="resource-section">
-      <h3>⚠️ 4. Easy to Mix Up (คำที่มักสับสน)</h3>
-      <ul class="resource-list">
-        <li><b>lecture</b> (การบรรยาย) VS <b>lecturer</b> (อาจารย์ผู้สอน)</li>
-        <li><b>faculty</b> (คณะ) VS <b>major</b> (วิชาเอก)</li>
-      </ul>
+    <div id="inv-mats-view" class="hidden">
+      <div class="quest-card">
+        <h3 style="margin:0 0 4px 0; font-size:0.95rem;">📓 สรุปบทเรียน Module 1</h3>
+        <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">คำศัพท์สถานที่, การเรียน, Collocations</p>
+      </div>
+      <div class="quest-card">
+        <h3 style="margin:0 0 4px 0; font-size:0.95rem;">📓 สรุปบทเรียน Module 2</h3>
+        <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">เทคนิค Skimming & Scanning หาจุดสำคัญ</p>
+      </div>
     </div>
   </div>
 
@@ -263,7 +206,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
       <div style="background:var(--primary); padding:2px 12px; border-radius:10px; font-size:0.8rem; display:inline-block; font-weight:bold; margin-bottom:12px;" id="q-counter">Q 1/15</div>
       
       <!-- กล่องบทอ่าน -->
-      <div id="q-context" style="font-size:0.85rem; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; color:#cbd5e1; line-height:1.4; max-height:120px; overflow-y:auto; margin-bottom:12px; border-left: 3px solid var(--secondary); text-align:left;" class="hidden"></div>
+      <div id="q-context" style="font-size:0.85rem; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; color:#cbd5e1; line-height:1.4; max-height:150px; overflow-y:auto; margin-bottom:12px; border-left: 3px solid var(--secondary); text-align:left;" class="hidden"></div>
       
       <div class="q-text" id="q-text" style="font-size:1.15rem; font-weight:600; line-height:1.5;">Question?</div>
     </div>
@@ -299,7 +242,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 
   <!-- ================= RANKING ================= -->
   <div id="screen-ranking" class="hidden panel" style="margin-top: 40px;">
-    <h2 style="color:var(--warning); text-align:center;">🏆 จัดอันดับ Top 5</h2>
+    <h2 style="color:var(--warning); text-align:center;">🏆 จัดอันดับ Top 5 (EXP รวม)</h2>
     <div id="rank-list" style="display:flex; flex-direction:column; gap:8px; margin-top:20px;"></div>
   </div>
 
@@ -315,10 +258,13 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 
 <script>
 /* ================== URL ตั้งค่า ================== */
-const JSON_URL = "https://raw.githubusercontent.com/Paloliiz/english4futurestudies2-69/refs/heads/main/module1.json"; 
+const JSON_URL_M1 = "https://raw.githubusercontent.com/Paloliiz/english4futurestudies2-69/refs/heads/main/module1.json"; 
+const JSON_URL_M2 = "https://raw.githubusercontent.com/Paloliiz/english4futurestudies2-69/refs/heads/main/module2.json"; 
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbxOknhio71rK1NiESL2JLzQTt-qLfArXUZl4y4e8vhwtuFa8UuBrwKU4BID6Wn--ZueSw/exec"; 
 
-let currentStudent = { id: "", name: "", cls: "6/1", score: 0, level: 1, title: "Novice Scholar 👶", glasses: 1, module1Passed: false };
+let currentStudent = { id: "", name: "", cls: "6/1", score: 0, level: 1, title: "Novice Scholar 👶", glasses: 1, module1Passed: false, module2Passed: false };
+let activeModule = "M1"; 
+
 const $ = id => document.getElementById(id);
 const show = id => $(id)?.classList.remove('hidden');
 const hide = id => $(id)?.classList.add('hidden');
@@ -332,7 +278,7 @@ window.onload = () => {
   }
 };
 
-/* ================== ระบบเสียง (Web Audio API) ================== */
+/* ================== ระบบเสียง ================== */
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
 function playSound(type) {
@@ -367,7 +313,7 @@ function playSound(type) {
   }
 }
 
-/* ================== ระบบ Level และ Title ================== */
+/* ================== ระบบ Level และอัปเดตหน้าจอ ================== */
 function updatePlayerStats() {
   const score = currentStudent.score;
   let lvl = 1; let title = "Novice Scholar 👶"; let progress = 0;
@@ -383,25 +329,35 @@ function updatePlayerStats() {
   $("player-exp").innerText = `${score} EXP`; $("exp-bar-fill").style.width = `${progress}%`;
   $("item-glasses-count").innerText = currentStudent.glasses;
   
+  // อัปเดตปุ่ม M1
   if (currentStudent.module1Passed) {
-    $("status-module1").innerText = "PASSED"; $("status-module1").className = "quest-status qs-done";
+    $("status-m1").innerText = "PASSED"; $("status-m1").className = "quest-status qs-done";
     $("btn-start-m1").innerText = "สอบผ่านแล้ว 🎉"; $("btn-start-m1").disabled = true; $("btn-start-m1").style.background = "#475569";
   } else {
-    $("status-module1").innerText = "PENDING"; $("status-module1").className = "quest-status qs-pending";
+    $("status-m1").innerText = "PENDING"; $("status-m1").className = "quest-status qs-pending";
     $("btn-start-m1").innerText = "บุกเข้าทำด่านทดสอบ 🎮"; $("btn-start-m1").disabled = false; $("btn-start-m1").style.background = "linear-gradient(180deg, var(--primary), #7c3aed)";
+  }
+  
+  // อัปเดตปุ่ม M2
+  if (currentStudent.module2Passed) {
+    $("status-m2").innerText = "PASSED"; $("status-m2").className = "quest-status qs-done";
+    $("btn-start-m2").innerText = "สอบผ่านแล้ว 🎉"; $("btn-start-m2").disabled = true; $("btn-start-m2").style.background = "#475569";
+  } else {
+    $("status-m2").innerText = "PENDING"; $("status-m2").className = "quest-status qs-pending";
+    $("btn-start-m2").innerText = "บุกเข้าทำด่านทดสอบ 🎮"; $("btn-start-m2").disabled = false; $("btn-start-m2").style.background = "linear-gradient(180deg, var(--secondary), #2563eb)";
   }
 }
 
-/* ================== ระบบนำทาง และ หน้าข้อมูล (แก้ไขใหม่) ================== */
+/* ================== เมนูนำทาง ================== */
 function switchNavTab(tab) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   const targetNav = document.querySelector(`.nav-item[onclick*="switchNavTab('${tab}')"]`);
   if(targetNav) targetNav.classList.add('active');
   
-  ['dashboard', 'quests', 'inventory', 'ranking', 'game', 'end', 'resource-viewer'].forEach(name => hide('screen-' + name));
+  ['dashboard', 'quests', 'inventory', 'ranking', 'game', 'end'].forEach(name => hide('screen-' + name));
   show('screen-' + tab);
   
-  if(tab === 'game' || tab === 'login' || tab === 'end' || tab === 'resource-viewer') hide('bottom-bar');
+  if(tab === 'game' || tab === 'login' || tab === 'end') hide('bottom-bar');
   else show('bottom-bar');
 }
 
@@ -419,17 +375,6 @@ function equipAvatar(newAvatar) {
   $("main-avatar").innerHTML = `${newAvatar}<div class="avatar-lvl" id="player-lvl">${currentStudent.level}</div>`;
   alert(`✨ สวมใส่ตัวละคร ${newAvatar} เรียบร้อยแล้ว!`);
 }
-function openResource(mod) {
-  hide('screen-inventory');
-  hide('bottom-bar');
-  show('screen-resource-viewer');
-  window.scrollTo(0, 0);
-}
-function closeResource() {
-  hide('screen-resource-viewer');
-  show('screen-inventory');
-  show('bottom-bar');
-}
 
 function returnToDashboard() {
   const gacha = $("gacha-area");
@@ -442,7 +387,7 @@ function returnToDashboard() {
   $("submit-msg").classList.add("hidden");
   
   updatePlayerStats();
-  switchNavTab('dashboard'); // สลับกลับหน้าข้อมูล (Dashboard)
+  switchNavTab('dashboard');
 }
 
 /* ================== ระบบล็อกอิน ================== */
@@ -459,17 +404,21 @@ async function handleLogin() {
       const response = await fetch(`${SHEET_URL}?action=getStudent&id=${stdId}&name=${encodeURIComponent(stdName)}`);
       const data = await response.json();
       if (!data.error) {
-        currentStudent = { id: data.id, name: data.name, cls: data.cls, score: data.score || 0, level: 1, title: "Novice Scholar 👶", glasses: 1, module1Passed: data.module1Passed };
+        currentStudent = { 
+            id: data.id, name: data.name, cls: data.cls, score: data.score || 0, 
+            level: 1, title: "Novice Scholar 👶", glasses: 1, 
+            module1Passed: data.module1Passed, module2Passed: data.module2Passed 
+        };
       } else throw new Error("ไม่พบชื่อในระบบ Google Sheets");
     } else {
       await new Promise(r => setTimeout(r, 1000));
-      let localPassed = localStorage.getItem(`passed_m1_${stdId}`) === 'true';
-      currentStudent = { id: stdId, name: stdName, cls: "6/1", score: 0, level: 1, title: "Novice Scholar 👶", glasses: 1, module1Passed: localPassed };
+      let p1 = localStorage.getItem(`passed_m1_${stdId}`) === 'true';
+      let p2 = localStorage.getItem(`passed_m2_${stdId}`) === 'true';
+      currentStudent = { id: stdId, name: stdName, cls: "6/1", score: 0, level: 1, title: "Novice Scholar 👶", glasses: 1, module1Passed: p1, module2Passed: p2 };
     }
 
     $("player-name-txt").innerText = `${currentStudent.name} (ม.${currentStudent.cls})`;
     updatePlayerStats(); 
-
     hide('screen-login'); switchNavTab('dashboard');
   } catch (error) {
     alert("❌ ข้อมูลไม่ถูกต้อง หรือระบบขัดข้อง: " + error.message);
@@ -482,11 +431,8 @@ const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
 let gameState = { questions: [], currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
 let hasUsedGlassesThisRun = false; let timerInterval; let timeLeft = 15;
 
-const fallbackQuestions = [
-  { "q": "คำว่า <b>dormitory</b> แปลว่าอะไร?", "a": "หอพักนักศึกษา", "choices": ["หอพักนักศึกษา", "ห้องสมุด", "วิทยาเขต", "คณะ"] }
-];
-
-async function startModule1Game() {
+async function startGame(mod) {
+  activeModule = mod;
   switchNavTab('game');
   $("q-text").innerHTML = "กำลังดึงข้อสอบจากคลังเวทมนตร์...";
   
@@ -500,9 +446,10 @@ async function startModule1Game() {
   }
 
   try {
-    let loadedQuestions = fallbackQuestions;
-    if (JSON_URL && JSON_URL.trim() !== "") {
-      const response = await fetch(JSON_URL);
+    let url = (mod === 'M1') ? JSON_URL_M1 : JSON_URL_M2;
+    let loadedQuestions = [];
+    if (url && url.trim() !== "") {
+      const response = await fetch(url);
       loadedQuestions = await response.json();
     }
     
@@ -515,9 +462,8 @@ async function startModule1Game() {
     gameState = { questions: finalQuestions, currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
     renderQuestion();
   } catch (error) {
-    alert("โหลดข้อสอบล้มเหลว โปรดตรวจสอบลิงก์ JSON");
-    gameState = { questions: fallbackQuestions, currentIdx: 0, hp: 3, score: 0, combo: 1, correctCount: 0 };
-    renderQuestion();
+    alert("โหลดข้อสอบล้มเหลว โปรดตรวจสอบลิงก์ JSON หรืออินเทอร์เน็ต");
+    switchNavTab('quests');
   }
 }
 
@@ -546,11 +492,9 @@ function renderQuestion() {
   
   const qContext = $("q-context");
   if (q.ctx) {
-     qContext.innerHTML = q.ctx;
-     qContext.classList.remove("hidden");
+     qContext.innerHTML = q.ctx; qContext.classList.remove("hidden");
   } else {
-     qContext.classList.add("hidden");
-     qContext.innerHTML = "";
+     qContext.classList.add("hidden"); qContext.innerHTML = "";
   }
   
   const optCont = $("opt-container"); optCont.innerHTML = "";
@@ -622,7 +566,7 @@ function endGame() {
   const statusEl = $("end-pass-status");
   if (isPass) {
     playSound('victory');
-    statusEl.innerHTML = `<span style="background: rgba(16,185,129,0.2); color: var(--success); padding: 6px 16px; border-radius: 12px; font-weight: bold;">🎉 ผ่านเกณฑ์!</span>`;
+    statusEl.innerHTML = `<span style="background: rgba(16,185,129,0.2); color: var(--success); padding: 6px 16px; border-radius: 12px; font-weight: bold;">🎉 ผ่านเกณฑ์ ${activeModule}!</span>`;
   } else {
     playSound('wrong');
     statusEl.innerHTML = `<span style="background: rgba(239,68,68,0.2); color: var(--danger); padding: 6px 16px; border-radius: 12px; font-weight: bold;">❌ ไม่ผ่านเกณฑ์ (ได้น้อยกว่า 10 หรือ HP หมด)</span>`;
@@ -639,13 +583,16 @@ function endGame() {
   rankEl.style.background = `linear-gradient(135deg, ${rankColor}, #000)`;
   rankEl.style.boxShadow = `0 0 30px ${rankColor}88`;
 
+  // ตรวจสอบว่าโมดูลนี้เคยผ่านไปแล้วหรือยัง
+  let alreadyPassed = (activeModule === 'M1') ? currentStudent.module1Passed : currentStudent.module2Passed;
+
   $("btn-submit").style.display = "none";
-  if (currentStudent.module1Passed) {
-    $("btn-submit").disabled = true; $("btn-submit").innerText = "สอบผ่านไปแล้ว ส่งคะแนนซ้ำไม่ได้ 🔒"; $("btn-submit").style.background = "#475569";
+  if (alreadyPassed) {
+    $("btn-submit").disabled = true; $("btn-submit").innerText = `สอบผ่าน ${activeModule} ไปแล้ว 🔒`; $("btn-submit").style.background = "#475569";
   } else if (!isPass) {
     $("btn-submit").disabled = true; $("btn-submit").innerText = "ต้องได้ 10 คะแนนขึ้นไปจึงจะบันทึกได้ 🔒"; $("btn-submit").style.background = "#475569";
   } else {
-    $("btn-submit").disabled = false; $("btn-submit").innerText = "📤 ส่งผลคะแนนเข้าระบบ"; $("btn-submit").style.background = "linear-gradient(180deg, var(--primary), #7c3aed)";
+    $("btn-submit").disabled = false; $("btn-submit").innerText = `📤 ส่งคะแนน ${activeModule} เข้าระบบ`; $("btn-submit").style.background = "linear-gradient(180deg, var(--primary), #7c3aed)";
   }
 }
 
@@ -655,11 +602,11 @@ function drawGacha() {
   const gachaArea = $("gacha-area");
   const rewards = [
     { type: 'exp', val: 500, title: "โบนัส 500 EXP 🌟", desc: "รับค่าประสบการณ์เพิ่มฟรีๆ ไปเลย!", isGood: true },
-    { type: 'item', val: "glasses", title: "ได้รับ 👓 แว่นตานักปราชญ์", desc: "นำไปใช้ตัดชอยส์ในห้องสอบรอบถัดไป", isGood: true },
+    { type: 'item', val: "glasses", title: "ได้รับ 👓 แว่นตานักปราชญ์", desc: "มีแว่นตาไปใช้ในห้องสอบเพิ่ม 1 อัน", isGood: true },
     { type: 'exp', val: -200, title: "โดนโจมตี! เสีย 200 EXP 🌪️", desc: "โชคร้ายเจอพายุเวทมนตร์", isGood: false },
     { type: 'multiply', val: 2, title: "แจ็คพอต! คะแนนคูณ 2 🔥", desc: "คะแนนด่านนี้ทั้งหมดคูณสอง", isGood: true },
-    { type: 'avatar', val: "👽", title: "ปลดล็อกตัวละคร: เอเลี่ยน 👽", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true },
-    { type: 'avatar', val: "👻", title: "ปลดล็อกตัวละคร: วิญญาณ 👻", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true }
+    { type: 'avatar', val: "👽", title: "ปลดล็อก: เอเลี่ยน 👽", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true },
+    { type: 'avatar', val: "👻", title: "ปลดล็อก: วิญญาณ 👻", desc: "สวมใส่ได้เลยในหน้าคลังไอเทม", isGood: true }
   ];
   
   const r = rewards[Math.floor(Math.random() * rewards.length)];
@@ -668,13 +615,12 @@ function drawGacha() {
   gachaArea.innerHTML = `<h3 style="margin: 0 0 5px 0;">${r.title}</h3><p style="font-size: 0.8rem; margin-bottom: 0;">${r.desc}</p>`;
 
   if (r.type === 'exp') {
-    currentStudent.score += r.val; 
-    if (currentStudent.score < 0) currentStudent.score = 0;
+    currentStudent.score += r.val; if (currentStudent.score < 0) currentStudent.score = 0;
+    updatePlayerStats();
   } else if (r.type === 'multiply') {
     gameState.score *= r.val; $("end-score").innerText = gameState.score;
   } else if (r.type === 'item' && r.val === "glasses") {
-    currentStudent.glasses++;
-    $("item-glasses-count").innerText = currentStudent.glasses;
+    currentStudent.glasses++; $("item-glasses-count").innerText = currentStudent.glasses;
   } else if (r.type === 'avatar') {
     $("inv-rewards-view").innerHTML += `
       <div class="item-card">
@@ -699,18 +645,19 @@ async function submitScore() {
     setTimeout(() => {
       $("submit-msg").innerText = "✅ (โหมดจำลอง) บันทึกคะแนนลงระบบเรียบร้อยแล้ว!";
       show('submit-msg');
-      currentStudent.module1Passed = true; 
-      localStorage.setItem(`passed_m1_${currentStudent.id}`, 'true'); 
+      if(activeModule === 'M1') { currentStudent.module1Passed = true; localStorage.setItem(`passed_m1_${currentStudent.id}`, 'true'); }
+      else { currentStudent.module2Passed = true; localStorage.setItem(`passed_m2_${currentStudent.id}`, 'true'); }
     }, 1000);
     return;
   }
 
   try {
-    const payload = { action: "submitScore", studentId: currentStudent.id, name: currentStudent.name, score: gameState.score, correct: gameState.correctCount };
+    const payload = { action: "submitScore", studentId: currentStudent.id, name: currentStudent.name, module: activeModule, score: gameState.score, correct: gameState.correctCount };
     await fetch(SHEET_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
     $("submit-msg").innerText = "✅ บันทึกคะแนนลงระบบของครูเรียบร้อยแล้ว!";
     show('submit-msg');
-    currentStudent.module1Passed = true;
+    if(activeModule === 'M1') currentStudent.module1Passed = true;
+    else currentStudent.module2Passed = true;
   } catch(e) {
     alert("การส่งขัดข้อง: " + e.message); $("btn-submit").disabled = false; $("btn-submit").innerText = "ลองส่งคะแนนอีกครั้ง";
   }
